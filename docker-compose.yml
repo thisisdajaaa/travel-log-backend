@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:13
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: travel-log
+      POSTGRES_USER: travel_log_user
+      POSTGRES_PASSWORD: travel_log_pass
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  pgadmin:
+    image: dpage/pgadmin4
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: travel@log.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    depends_on:
+      - db
+
+volumes:
+  db-data:
