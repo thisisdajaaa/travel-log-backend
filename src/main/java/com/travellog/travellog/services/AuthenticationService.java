@@ -118,32 +118,38 @@ public class AuthenticationService {
         final String refreshToken;
         final String userEmail;
 
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) {
-            return;
-        }
+        if (authHeader == null ||!authHeader.startsWith("Bearer ")) return;
+
 
         refreshToken = authHeader.substring(7);
         userEmail = jwtService.extractUsername(refreshToken);
 
-        if (userEmail != null) {
-            UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
-            User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
-
-            if (jwtService.isTokenValid(refreshToken, userDetails)) {
-                String jwtToken = jwtService.generateToken(userDetails);
-                String newRefreshToken = jwtService.generateRefreshToken(userDetails);
-
-                revokeAllUserTokens(user.getId());
-                saveUserToken(user, jwtToken);
-
-                AuthenticationDetailDto authResponse = AuthenticationDetailDto.builder()
-                        .accessToken(jwtToken)
-                        .refreshToken(newRefreshToken)
-                        .build();
-
-                response.setContentType("application/json");
-                new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
-            }
+        if (userEmail == null) {
+            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+            return;
         }
+
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+
+        if (!jwtService.isTokenValid(refreshToken, userDetails)) {
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+
+        String jwtToken = jwtService.generateToken(userDetails);
+        String newRefreshToken = jwtService.generateRefreshToken(userDetails);
+
+        revokeAllUserTokens(user.getId());
+        saveUserToken(user, jwtToken);
+
+        AuthenticationDetailDto authResponse = AuthenticationDetailDto.builder()
+                .accessToken(jwtToken)
+                .refreshToken(newRefreshToken)
+                .build();
+
+        response.setContentType("application/json");
+        new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
+
     }
 }
