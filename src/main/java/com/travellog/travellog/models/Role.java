@@ -1,21 +1,29 @@
 package com.travellog.travellog.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.ToString;
+import lombok.*;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "role")
-@Getter
-@Setter
-@ToString
+@EqualsAndHashCode(callSuper = true)
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class Role extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "RoleId")
     private Integer id;
 
     @Column(name = "RoleName")
     private String roleName;
+
+    @OneToMany(mappedBy = "role")
+    @JsonIgnore
+    private Set<User> users;
 }
