@@ -7,6 +7,7 @@ import com.travellog.travellog.constants.TokenTypeEnum;
 import com.travellog.travellog.dtos.AuthenticationDetailDto;
 import com.travellog.travellog.dtos.CreateUserDto;
 import com.travellog.travellog.dtos.LoginDto;
+import com.travellog.travellog.exceptions.UserException;
 import com.travellog.travellog.models.Role;
 import com.travellog.travellog.models.Token;
 import com.travellog.travellog.models.User;
@@ -17,12 +18,16 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
@@ -95,14 +100,20 @@ public class AuthenticationService {
     }
 
     public AuthenticationDetailDto authenticate(LoginDto loginDto) {
-        authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getIdentifier(), loginDto.getPassword()));
+        try {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getIdentifier(), loginDto.getPassword()));
+        } catch (BadCredentialsException ex) {
+            throw new UserException.NotFoundException("Incorrect username or password!");
+        } catch (AuthenticationException ex) {
+            throw new UserException.NotFoundException("Authentication failed!");
+        }
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginDto.getIdentifier());
 
         String jwtToken = jwtService.generateToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);
 
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(UserException.NotFoundException::new);
 
         revokeAllUserTokens(user.getId());
         saveUserToken(user, jwtToken);
@@ -110,31 +121,26 @@ public class AuthenticationService {
         return AuthenticationDetailDto.builder().accessToken(jwtToken).refreshToken(refreshToken).build();
     }
 
-    public void refreshToken(
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
+    public void refreshToken(HttpServletRequest request, HttpServletResponse response) throws IOException {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
-        final String refreshToken;
-        final String userEmail;
 
-        if (authHeader == null ||!authHeader.startsWith("Bearer ")) return;
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid authorization header format!");
+        }
 
-
-        refreshToken = authHeader.substring(7);
-        userEmail = jwtService.extractUsername(refreshToken);
+        final String refreshToken = authHeader.substring(7);
+        final String userEmail = jwtService.extractUsername(refreshToken);
 
         if (userEmail == null) {
-            response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-            return;
+            throw new UserException.NotFoundException("User email not found in token!");
         }
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(() -> new UsernameNotFoundException("User not found!"));
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(UserException.NotFoundException::new);
 
         if (!jwtService.isTokenValid(refreshToken, userDetails)) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token is not valid.");
         }
 
         String jwtToken = jwtService.generateToken(userDetails);
@@ -150,6 +156,5 @@ public class AuthenticationService {
 
         response.setContentType("application/json");
         new ObjectMapper().writeValue(response.getOutputStream(), authResponse);
-
     }
 }

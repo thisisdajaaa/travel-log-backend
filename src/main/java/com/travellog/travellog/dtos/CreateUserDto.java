@@ -14,19 +14,19 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class CreateUserDto {
-    @NotEmpty
-    @NotBlank
+    @NotEmpty(message = "Email field should not be empty!")
+    @NotBlank(message = "Email field should not be null!")
     @Size(min = 6, max = 40, message = "Email must not be more than 40 characters!")
-    @Email
+    @Email(message = "Must be a valid email!")
     private String email;
 
-    @NotEmpty
-    @NotBlank
+    @NotEmpty(message = "Username field should not be empty!")
+    @NotBlank(message = "Username field should not be null!")
     @Size(min = 4, max = 40, message = "Username must not be more than 40 characters!")
     private String username;
 
-    @NotEmpty
-    @NotBlank
+    @NotEmpty(message = "Password field should not be empty!")
+    @NotBlank(message = "Password field should not be null!")
     @Size(min = 8, max = 15, message = "Password must not be less than 8 and not more than 15 characters!")
     private String password;
 }
