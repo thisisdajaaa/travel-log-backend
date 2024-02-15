@@ -1,7 +1,6 @@
 package com.travellog.travellog.configurations;
 
 import com.travellog.travellog.helpers.ApplicationAuditAwareHelper;
-import com.travellog.travellog.repositories.UserRepository;
 import com.travellog.travellog.services.CustomUserDetailsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -20,7 +19,6 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @RequiredArgsConstructor
 public class ApplicationConfiguration {
     private final CustomUserDetailsService customUserDetailsService;
-
     @Bean
     public AuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
