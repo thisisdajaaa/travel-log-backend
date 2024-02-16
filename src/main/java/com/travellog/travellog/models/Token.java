@@ -1,7 +1,6 @@
 package com.travellog.travellog.models;
 
 import com.travellog.travellog.constants.TokenTypeEnum;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,7 +20,7 @@ public class Token extends Audit {
     public String token;
 
     @Enumerated(EnumType.STRING)
-    public TokenTypeEnum tokenType = TokenTypeEnum.BEARER;
+    public TokenTypeEnum tokenType;
 
     public boolean revoked;
 

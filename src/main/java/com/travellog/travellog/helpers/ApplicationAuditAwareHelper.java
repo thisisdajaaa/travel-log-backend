@@ -1,4 +1,5 @@
 package com.travellog.travellog.helpers;
+
 import com.travellog.travellog.models.User;
 import org.springframework.data.domain.AuditorAware;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -10,14 +11,12 @@ import java.util.Optional;
 public class ApplicationAuditAwareHelper implements AuditorAware<Integer> {
     @Override
     public Optional<Integer> getCurrentAuditor() {
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
+        Authentication authentication = SecurityContextHolder
+                .getContext()
+                .getAuthentication();
         if (authentication == null ||
                 !authentication.isAuthenticated() ||
-                authentication instanceof AnonymousAuthenticationToken
-        ) {
+                authentication instanceof AnonymousAuthenticationToken) {
             return Optional.empty();
         }
 

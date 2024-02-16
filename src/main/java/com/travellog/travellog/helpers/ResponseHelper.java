@@ -2,7 +2,6 @@ package com.travellog.travellog.helpers;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor

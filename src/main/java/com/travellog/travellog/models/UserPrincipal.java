@@ -1,13 +1,11 @@
 package com.travellog.travellog.models;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -62,7 +60,8 @@ public class UserPrincipal implements UserDetails {
         return true;
     }
 
-    public UserPrincipal(Integer id, String username, String password, String email, Collection<? extends GrantedAuthority> authorities) {
+    public UserPrincipal(Integer id, String username, String password, String email,
+            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;
@@ -71,14 +70,14 @@ public class UserPrincipal implements UserDetails {
     }
 
     public static UserPrincipal create(User user) {
-        Collection<? extends GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(user.getRole().getRoleName()));
+        Collection<? extends GrantedAuthority> authorities = List
+                .of(new SimpleGrantedAuthority(user.getRole().getRoleName()));
         return new UserPrincipal(
                 user.getId(),
                 user.getUsername(),
                 user.getPassword(),
                 user.getEmail(),
-                authorities
-        );
+                authorities);
     }
 
     public void setId(Integer id) {

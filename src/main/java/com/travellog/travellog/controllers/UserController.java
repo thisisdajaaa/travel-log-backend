@@ -8,7 +8,6 @@ import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -27,15 +26,13 @@ public class UserController {
     public ResponseEntity<ResponseHelper<UserDetailDto>> createUser(@Valid @RequestBody CreateUserDto createUserDto) {
         return new ResponseEntity<>(
                 new ResponseHelper<>(true, "Successfully created user!", userService.createUser(createUserDto)),
-                HttpStatus.CREATED
-        );
+                HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<ResponseHelper<List<UserDetailDto>>> getUsers() {
         return new ResponseEntity<>(
                 new ResponseHelper<>(true, "Successfully retrieved all users!", userService.getUsers()),
-                HttpStatus.OK
-        );
+                HttpStatus.OK);
     }
 }

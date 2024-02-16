@@ -24,7 +24,8 @@ public class LogoutServiceImpl implements LogoutService {
         final String authHeader = request.getHeader("Authorization");
         final String jwt;
 
-        if (authHeader == null ||!authHeader.startsWith("Bearer")) return;
+        if (authHeader == null || !authHeader.startsWith("Bearer"))
+            return;
 
         jwt = authHeader.substring(7);
         Token storedToken = tokenRepository.findByToken(jwt)

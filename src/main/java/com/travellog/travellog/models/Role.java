@@ -3,9 +3,6 @@ package com.travellog.travellog.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-
-import java.util.List;
 import java.util.Set;
 
 @Entity

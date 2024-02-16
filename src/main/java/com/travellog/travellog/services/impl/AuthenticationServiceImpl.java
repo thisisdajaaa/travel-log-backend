@@ -45,9 +45,11 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final ConversionConfiguration conversionConfiguration;
     private final CustomUserDetailsService customUserDetailsService;
 
-
     @Autowired
-    public AuthenticationServiceImpl(UserRepository userRepository, TokenRepository tokenRepository, RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JWTService jwtService, AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration, CustomUserDetailsService customUserDetailsService) {
+    public AuthenticationServiceImpl(UserRepository userRepository, TokenRepository tokenRepository,
+            RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JWTService jwtService,
+            AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
+            CustomUserDetailsService customUserDetailsService) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.roleRepository = roleRepository;
@@ -73,9 +75,10 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private void revokeAllUserTokens(Integer id) {
         List<Token> validUserTokens = tokenRepository.findAllValidTokenByUser(id);
 
-        if (validUserTokens.isEmpty()) return;
+        if (validUserTokens.isEmpty())
+            return;
 
-        for (Token token: validUserTokens) {
+        for (Token token : validUserTokens) {
             token.setExpired(true);
             token.setRevoked(true);
         }
@@ -105,7 +108,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Override
     public AuthenticationDetailDto authenticate(LoginDto loginDto) {
         try {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginDto.getIdentifier(), loginDto.getPassword()));
+            authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(loginDto.getIdentifier(), loginDto.getPassword()));
         } catch (BadCredentialsException ex) {
             throw new UserException.NotFoundException("Incorrect username or password!");
         } catch (AuthenticationException ex) {
@@ -117,7 +121,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         String jwtToken = jwtService.generateToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);
 
-        User user = userRepository.findByUsername(userDetails.getUsername()).orElseThrow(UserException.NotFoundException::new);
+        User user = userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(UserException.NotFoundException::new);
 
         revokeAllUserTokens(user.getId());
         saveUserToken(user, jwtToken);

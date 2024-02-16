@@ -3,7 +3,6 @@ package com.travellog.travellog.controllers;
 import com.travellog.travellog.dtos.AuthenticationDetailDto;
 import com.travellog.travellog.dtos.CreateUserDto;
 import com.travellog.travellog.dtos.LoginDto;
-import com.travellog.travellog.dtos.UserDetailDto;
 import com.travellog.travellog.helpers.ResponseHelper;
 import com.travellog.travellog.services.AuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -30,26 +29,26 @@ public class AuthenticationController {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseHelper<AuthenticationDetailDto>> register(@Valid @RequestBody CreateUserDto createUserDto) {
+    public ResponseEntity<ResponseHelper<AuthenticationDetailDto>> register(
+            @Valid @RequestBody CreateUserDto createUserDto) {
         return new ResponseEntity<>(
-                new ResponseHelper<>(true, "Successfully registered user!", authenticationService.register(createUserDto)),
-                HttpStatus.CREATED
-        );
+                new ResponseHelper<>(true, "Successfully registered user!",
+                        authenticationService.register(createUserDto)),
+                HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
     public ResponseEntity<ResponseHelper<AuthenticationDetailDto>> login(@Valid @RequestBody LoginDto loginDto) {
         return new ResponseEntity<>(
-                new ResponseHelper<>(true, "Successfully logged in user!", authenticationService.authenticate(loginDto)),
-                HttpStatus.OK
-        );
+                new ResponseHelper<>(true, "Successfully logged in user!",
+                        authenticationService.authenticate(loginDto)),
+                HttpStatus.OK);
     }
 
     @PostMapping("/refresh-token")
     public void refreshToken(
             HttpServletRequest request,
-            HttpServletResponse response
-    ) throws IOException {
+            HttpServletResponse response) throws IOException {
         authenticationService.refreshToken(request, response);
     }
 }

@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class RoleController {
     private final RoleService roleService;
 
-
     @Autowired
     public RoleController(RoleService roleService) {
         this.roleService = roleService;
@@ -28,7 +27,6 @@ public class RoleController {
     public ResponseEntity<ResponseHelper<RoleDetailDto>> createRole(@Valid @RequestBody CreateRoleDto createRoleDto) {
         return new ResponseEntity<>(
                 new ResponseHelper<>(true, "Successfully created role!", roleService.createRole(createRoleDto)),
-                HttpStatus.CREATED
-        );
+                HttpStatus.CREATED);
     }
 }

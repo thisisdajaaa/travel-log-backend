@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -36,13 +35,14 @@ public class SecurityConfiguration {
     @Value("#{'${cors.exposed-headers}'.split(',')}")
     private List<String> exposedHeaders;
 
-    private static final String[] WHITE_LIST_URL = {"/api/v1/auth/**"};
+    private static final String[] WHITE_LIST_URL = { "/api/v1/auth/**" };
     private final AuthenticationProvider authenticationProvider;
     private final JWTAuthenticationFilterHelper jwtAuthenticationFilterHelper;
     private final LogoutHandler logoutHandler;
 
     @Autowired
-    public SecurityConfiguration(AuthenticationProvider authenticationProvider, JWTAuthenticationFilterHelper jwtAuthenticationFilterHelper, LogoutHandler logoutHandler) {
+    public SecurityConfiguration(AuthenticationProvider authenticationProvider,
+            JWTAuthenticationFilterHelper jwtAuthenticationFilterHelper, LogoutHandler logoutHandler) {
         this.authenticationProvider = authenticationProvider;
         this.jwtAuthenticationFilterHelper = jwtAuthenticationFilterHelper;
         this.logoutHandler = logoutHandler;
@@ -61,20 +61,17 @@ public class SecurityConfiguration {
                     configuration.addAllowedOrigin("http://localhost:3000");
                     return configuration;
                 }))
-                .authorizeHttpRequests(req ->
-                        req.requestMatchers(WHITE_LIST_URL)
-                            .permitAll()
-                            .anyRequest()
-                            .authenticated()
-                )
+                .authorizeHttpRequests(req -> req.requestMatchers(WHITE_LIST_URL)
+                        .permitAll()
+                        .anyRequest()
+                        .authenticated())
                 .sessionManagement(session -> session.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider)
                 .addFilterBefore(jwtAuthenticationFilterHelper, UsernamePasswordAuthenticationFilter.class)
-                .logout(logout ->
-                        logout.logoutUrl("/api/v1/auth/logout")
-                                .addLogoutHandler(logoutHandler)
-                                .logoutSuccessHandler((request, response, authentication) -> SecurityContextHolder.clearContext())
-                );
+                .logout(logout -> logout.logoutUrl("/api/v1/auth/logout")
+                        .addLogoutHandler(logoutHandler)
+                        .logoutSuccessHandler(
+                                (request, response, authentication) -> SecurityContextHolder.clearContext()));
 
         return http.build();
     }
