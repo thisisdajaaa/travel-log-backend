@@ -35,7 +35,8 @@ public class SecurityConfiguration {
     @Value("#{'${cors.exposed-headers}'.split(',')}")
     private List<String> exposedHeaders;
 
-    private static final String[] WHITE_LIST_URL = { "/api/v1/auth/**" };
+    // TODO need to configure swagger ui only in development environment.
+    private static final String[] WHITE_LIST_URL = { "/api/v1/auth/**", "/swagger-ui/**" , "/v3/**"};
     private final AuthenticationProvider authenticationProvider;
     private final JWTAuthenticationFilterHelper jwtAuthenticationFilterHelper;
     private final LogoutHandler logoutHandler;
