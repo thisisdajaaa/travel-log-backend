@@ -44,9 +44,9 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private final ICustomUserDetailsService customUserDetailsService;
 
     public AuthenticationServiceImpl(IUserRepository userRepository, ITokenRepository tokenRepository,
-                                     IRoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, IJWTService jwtService,
-                                     AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
-                                     ICustomUserDetailsService customUserDetailsService) {
+            IRoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, IJWTService jwtService,
+            AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
+            ICustomUserDetailsService customUserDetailsService) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.roleRepository = roleRepository;
@@ -137,10 +137,13 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         }
 
         final String refreshToken = authHeader.substring(7);
-        final String userEmail = jwtService.extractUsername(refreshToken);
+        final String userEmail;
 
-        if (userEmail == null) {
-            throw new UserException.NotFoundException("User email not found in token!");
+        try {
+            userEmail = jwtService.extractUsername(refreshToken);
+        } catch (Exception e) {
+            ResponseHelper.respondWithUnauthorizedError(response, "JWT token is not valid.");
+            return;
         }
 
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(userEmail);

@@ -1,6 +1,5 @@
 package com.travellog.travellog.helpers;
 
-import com.travellog.travellog.repositories.ITokenRepository;
 import com.travellog.travellog.services.spec.IJWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -23,13 +22,10 @@ public class JWTAuthenticationFilterHelper extends OncePerRequestFilter {
 
     private final IJWTService jwtService;
     private final UserDetailsService userDetailsService;
-    private final ITokenRepository tokenRepository;
 
-    public JWTAuthenticationFilterHelper(IJWTService jwtService, UserDetailsService userDetailsService,
-            ITokenRepository tokenRepository) {
+    public JWTAuthenticationFilterHelper(IJWTService jwtService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
-        this.tokenRepository = tokenRepository;
     }
 
     @Override
@@ -37,10 +33,21 @@ public class JWTAuthenticationFilterHelper extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        final String authHeader = request.getHeader("Authorization");
-        final String jwt = authHeader.substring(7);
+        if (request.getServletPath().contains("/api/v1/auth")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
 
-        String userEmail = "";
+        final String authHeader = request.getHeader("Authorization");
+        final String jwt;
+        final String userEmail;
+
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            filterChain.doFilter(request, response);
+            return;
+        }
+
+        jwt = authHeader.substring(7);
 
         try {
             userEmail = jwtService.extractUsername(jwt);
@@ -49,18 +56,16 @@ public class JWTAuthenticationFilterHelper extends OncePerRequestFilter {
             return;
         }
 
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
             if (!jwtService.isTokenValid(jwt, userDetails)) {
                 ResponseHelper.respondWithUnauthorizedError(response, "JWT token is not valid.");
                 return;
             }
 
-            Boolean isTokenValid = tokenRepository.findByToken(jwt)
-                    .map(t -> !t.isExpired() && !t.isRevoked())
-                    .orElse(false);
+            boolean isTokenNotExpiredAndRevoked = jwtService.isTokenNotExpiredAndRevoked(jwt);
 
-            if (!isTokenValid) {
+            if (!isTokenNotExpiredAndRevoked) {
                 ResponseHelper.respondWithUnauthorizedError(response, "JWT token is expired or revoked.");
                 return;
             }

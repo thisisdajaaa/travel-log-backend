@@ -1,5 +1,8 @@
 package com.travellog.travellog.constants;
 
+import lombok.Getter;
+
+@Getter
 public enum CountryListEnum {
     AFGHANISTAN("Afghanistan", "AF"),
     ALAND_ISLANDS("Åland Islands", "AX"),
@@ -251,14 +254,6 @@ public enum CountryListEnum {
     CountryListEnum(String countryName, String code) {
         this.countryName = countryName;
         this.code = code;
-    }
-
-    public String getCountryName() {
-        return countryName;
-    }
-
-    public String getCode() {
-        return code;
     }
 
     public static CountryListEnum getByCode(String code) {

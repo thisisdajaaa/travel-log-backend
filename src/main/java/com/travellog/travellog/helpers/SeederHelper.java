@@ -26,9 +26,10 @@ public class SeederHelper implements CommandLineRunner {
     }
 
     private void seedRolesTable() {
-        if (!roleService.isRoleListEmpty()) return;
+        if (!roleService.isRoleListEmpty())
+            return;
 
-        String[] roleNames = {"ADMIN", "USER"};
+        String[] roleNames = { "ADMIN", "USER" };
 
         for (String roleName : roleNames) {
             CreateRoleDto createRoleDto = new CreateRoleDto(roleName);
@@ -42,7 +43,8 @@ public class SeederHelper implements CommandLineRunner {
     }
 
     private void seedCountries() {
-        if (!countryService.isCountryListEmpty()) return;
+        if (!countryService.isCountryListEmpty())
+            return;
 
         for (CountryListEnum countryCode : CountryListEnum.values()) {
             CreateCountryDto countryDto = new CreateCountryDto(countryCode.getCountryName(), countryCode.getCode());
@@ -50,7 +52,8 @@ public class SeederHelper implements CommandLineRunner {
             try {
                 countryService.createCountry(countryDto);
             } catch (Exception e) {
-                System.out.println("Country " + countryDto.getName() + " already exists or could not be created: " + e.getMessage());
+                System.out.println("Country " + countryDto.getName() + " already exists or could not be created: "
+                        + e.getMessage());
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.travellog.travellog.services.impl;
 
+import com.travellog.travellog.repositories.ITokenRepository;
 import com.travellog.travellog.services.spec.IJWTService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -21,10 +22,18 @@ import org.springframework.stereotype.Service;
 public class JWTServiceImpl implements IJWTService {
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
+
     @Value("${application.security.jwt.expiration}")
     private long jwtExpiration;
+
     @Value("${application.security.jwt.refresh-token.expiration}")
     private long refreshExpiration;
+
+    private final ITokenRepository tokenRepository;
+
+    public JWTServiceImpl(ITokenRepository tokenRepository) {
+        this.tokenRepository = tokenRepository;
+    }
 
     @Override
     public String extractUsername(String token) {
@@ -95,5 +104,12 @@ public class JWTServiceImpl implements IJWTService {
     private Key getSignInKey() {
         byte[] keyBytes = Decoders.BASE64.decode(secretKey);
         return Keys.hmacShaKeyFor(keyBytes);
+    }
+
+    @Override
+    public boolean isTokenNotExpiredAndRevoked(String token) {
+        return tokenRepository.findByToken(token)
+                .map(t -> !t.isExpired() && !t.isRevoked())
+                .orElse(false);
     }
 }

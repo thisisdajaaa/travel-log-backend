@@ -18,4 +18,6 @@ public interface IJWTService {
     String generateRefreshToken(UserDetails userDetails);
 
     boolean isTokenValid(String token, UserDetails userDetails);
+
+    boolean isTokenNotExpiredAndRevoked(String token);
 }
