@@ -36,10 +36,8 @@ public class UserServiceImpl implements UserService {
     public UserDetailDto createUser(CreateUserDto createUserDto) {
         User user = conversionConfiguration.convert(createUserDto, User.class);
         Role foundRole = roleRepository.findByRoleName(String.valueOf(RoleEnum.USER));
-
         user.setRole(foundRole);
         user.setPassword(bCryptPasswordEncoder.encode(createUserDto.getPassword()));
-
         User savedUser = userRepository.save(user);
         return new UserDetailDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
     }

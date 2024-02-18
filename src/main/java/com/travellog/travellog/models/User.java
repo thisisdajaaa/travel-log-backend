@@ -36,4 +36,5 @@ public class User extends Audit {
 
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
+
 }
