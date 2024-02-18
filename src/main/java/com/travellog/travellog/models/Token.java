@@ -13,18 +13,21 @@ import lombok.*;
 @AllArgsConstructor
 public class Token extends Audit {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     public Integer id;
 
-    @Column(unique = true)
+    @Column(name = "token", unique = true)
     public String token;
 
+    @Column(name = "token_type", nullable = false)
     @Enumerated(EnumType.STRING)
     public TokenTypeEnum tokenType;
 
-    public boolean revoked;
+    @Column(name = "is_revoked")
+    public boolean isRevoked;
 
-    public boolean expired;
+    @Column(name = "is_expired")
+    public boolean isExpired;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")

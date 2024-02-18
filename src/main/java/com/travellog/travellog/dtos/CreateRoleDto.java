@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CreateRoleDto {
     @NotEmpty(message = "Role name field should not be empty!")
-    private String roleName;
+    private String name;
 }

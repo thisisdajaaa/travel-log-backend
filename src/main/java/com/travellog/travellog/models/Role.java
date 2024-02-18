@@ -17,8 +17,8 @@ public class Role extends Audit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "RoleName")
-    private String roleName;
+    @Column(name = "name")
+    private String name;
 
     @OneToMany(mappedBy = "role")
     @JsonIgnore

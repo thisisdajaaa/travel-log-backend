@@ -1,5 +1,6 @@
 package com.travellog.travellog.controllers;
 
+import com.travellog.travellog.constants.RoleEnum;
 import com.travellog.travellog.dtos.CreateUserDto;
 import com.travellog.travellog.dtos.UserDetailDto;
 import com.travellog.travellog.helpers.ResponseHelper;
@@ -23,7 +24,7 @@ public class UserController {
     @PostMapping
     public ResponseEntity<ResponseHelper.CustomResponse<UserDetailDto>> createUser(@Valid @RequestBody CreateUserDto createUserDto) {
         return new ResponseEntity<>(
-                new ResponseHelper.CustomResponse<>(true, "Successfully created user!", userService.createUser(createUserDto)),
+                new ResponseHelper.CustomResponse<>(true, "Successfully created user!", userService.createUser(createUserDto, RoleEnum.USER)),
                 HttpStatus.CREATED);
     }
 

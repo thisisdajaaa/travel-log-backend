@@ -71,7 +71,7 @@ public class UserPrincipal implements UserDetails {
 
     public static UserPrincipal create(User user) {
         Collection<? extends GrantedAuthority> authorities = List
-                .of(new SimpleGrantedAuthority(user.getRole().getRoleName()));
+                .of(new SimpleGrantedAuthority(user.getRole().getName()));
         return new UserPrincipal(
                 user.getId(),
                 user.getUsername(),

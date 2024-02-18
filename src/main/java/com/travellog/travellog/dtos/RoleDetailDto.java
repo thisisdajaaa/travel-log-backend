@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RoleDetailDto {
     private Integer id;
-    private String roleName;
+    private String name;
 }
