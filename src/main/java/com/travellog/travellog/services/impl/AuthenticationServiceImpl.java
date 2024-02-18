@@ -7,6 +7,7 @@ import com.travellog.travellog.constants.TokenTypeEnum;
 import com.travellog.travellog.dtos.AuthenticationDetailDto;
 import com.travellog.travellog.dtos.CreateUserDto;
 import com.travellog.travellog.dtos.LoginDto;
+import com.travellog.travellog.dtos.UserDetailDto;
 import com.travellog.travellog.exceptions.UserException;
 import com.travellog.travellog.helpers.ResponseHelper;
 import com.travellog.travellog.models.Role;
@@ -18,6 +19,7 @@ import com.travellog.travellog.repositories.IUserRepository;
 import com.travellog.travellog.services.spec.IAuthenticationService;
 import com.travellog.travellog.services.spec.ICustomUserDetailsService;
 import com.travellog.travellog.services.spec.IJWTService;
+import com.travellog.travellog.services.spec.IUserService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -36,25 +38,22 @@ import java.util.List;
 public class AuthenticationServiceImpl implements IAuthenticationService {
     private final IUserRepository userRepository;
     private final ITokenRepository tokenRepository;
-    private final IRoleRepository roleRepository;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final IJWTService jwtService;
     private final AuthenticationManager authenticationManager;
     private final ConversionConfiguration conversionConfiguration;
     private final ICustomUserDetailsService customUserDetailsService;
+    private final IUserService userService;
 
-    public AuthenticationServiceImpl(IUserRepository userRepository, ITokenRepository tokenRepository,
-            IRoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, IJWTService jwtService,
-            AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
-            ICustomUserDetailsService customUserDetailsService) {
+    public AuthenticationServiceImpl(IUserRepository userRepository, ITokenRepository tokenRepository, IJWTService jwtService,
+                                     AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
+                                     ICustomUserDetailsService customUserDetailsService, IUserService userService) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
-        this.roleRepository = roleRepository;
-        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.conversionConfiguration = conversionConfiguration;
         this.customUserDetailsService = customUserDetailsService;
+        this.userService = userService;
     }
 
     private void saveUserToken(User user, String jwtToken) {
@@ -62,8 +61,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                 .user(user)
                 .token(jwtToken)
                 .tokenType(TokenTypeEnum.BEARER)
-                .expired(false)
-                .revoked(false)
+                .isExpired(false)
+                .isRevoked(false)
                 .build();
 
         tokenRepository.save(token);
@@ -85,19 +84,14 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
     @Override
     public AuthenticationDetailDto register(CreateUserDto createUserDto) {
-        Role foundRole = roleRepository.findByRoleName(String.valueOf(RoleEnum.USER));
-        User user = conversionConfiguration.convert(createUserDto, User.class);
+        UserDetailDto createdUser = userService.createUser(createUserDto, RoleEnum.USER);
+        User user = conversionConfiguration.convert(createdUser, User.class);
 
-        user.setRole(foundRole);
-        user.setPassword(bCryptPasswordEncoder.encode(createUserDto.getPassword()));
-
-        User savedUser = userRepository.save(user);
-
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(savedUser.getUsername());
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getUsername());
         String jwtToken = jwtService.generateToken(userDetails);
         String refreshToken = jwtService.generateRefreshToken(userDetails);
 
-        saveUserToken(savedUser, jwtToken);
+        saveUserToken(user, jwtToken);
 
         return AuthenticationDetailDto.builder().accessToken(jwtToken).refreshToken(refreshToken).build();
     }

@@ -1,10 +1,13 @@
 package com.travellog.travellog.helpers;
 
 import com.travellog.travellog.constants.CountryListEnum;
+import com.travellog.travellog.constants.RoleEnum;
 import com.travellog.travellog.dtos.CreateCountryDto;
 import com.travellog.travellog.dtos.CreateRoleDto;
+import com.travellog.travellog.dtos.CreateUserDto;
 import com.travellog.travellog.services.spec.ICountryService;
 import com.travellog.travellog.services.spec.IRoleService;
+import com.travellog.travellog.services.spec.IUserService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -13,15 +16,18 @@ public class SeederHelper implements CommandLineRunner {
 
     private final IRoleService roleService;
     private final ICountryService countryService;
+    private final IUserService userService;
 
-    public SeederHelper(IRoleService roleService, ICountryService countryService) {
+    public SeederHelper(IRoleService roleService, ICountryService countryService, IUserService userService) {
         this.roleService = roleService;
         this.countryService = countryService;
+        this.userService = userService;
     }
 
     @Override
     public void run(String... args) throws Exception {
         seedRolesTable();
+        seedUsers();
         seedCountries();
     }
 
@@ -55,6 +61,20 @@ public class SeederHelper implements CommandLineRunner {
                 System.out.println("Country " + countryDto.getName() + " already exists or could not be created: "
                         + e.getMessage());
             }
+        }
+    }
+
+    private void seedUsers() {
+        if (!userService.isUserListEmpty())
+            return;
+
+        CreateUserDto createUserDto = new CreateUserDto("travel@log.com", "travelLogAdmin", "test12345");
+
+        try {
+            userService.createUser(createUserDto, RoleEnum.ADMIN);
+        } catch (Exception e) {
+            System.out.println("User " + createUserDto.getEmail() + " already exists or could not be created: "
+                    + e.getMessage());
         }
     }
 }

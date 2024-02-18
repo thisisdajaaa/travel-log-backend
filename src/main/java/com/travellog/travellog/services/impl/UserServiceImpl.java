@@ -31,9 +31,9 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserDetailDto createUser(CreateUserDto createUserDto) {
+    public UserDetailDto createUser(CreateUserDto createUserDto, RoleEnum roleEnum) {
         User user = conversionConfiguration.convert(createUserDto, User.class);
-        Role foundRole = roleRepository.findByRoleName(String.valueOf(RoleEnum.USER));
+        Role foundRole = roleRepository.findByName(String.valueOf(roleEnum));
 
         user.setRole(foundRole);
         user.setPassword(bCryptPasswordEncoder.encode(createUserDto.getPassword()));
@@ -52,5 +52,10 @@ public class UserServiceImpl implements IUserService {
         }
 
         return formattedUsers;
+    }
+
+    @Override
+    public boolean isUserListEmpty() {
+        return userRepository.count() == 0;
     }
 }
