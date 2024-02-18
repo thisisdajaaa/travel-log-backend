@@ -1,13 +1,13 @@
 package com.travellog.travellog.services.impl;
 
 import com.travellog.travellog.configurations.ConversionConfiguration;
-import com.travellog.travellog.constants.RoleEnum;
 import com.travellog.travellog.dtos.CreateProfileDto;
 import com.travellog.travellog.dtos.ProfileDetailDto;
 import com.travellog.travellog.models.Profile;
 import com.travellog.travellog.models.User;
 import com.travellog.travellog.repositories.IProfileRepository;
 import com.travellog.travellog.repositories.IUserRepository;
+import com.travellog.travellog.services.spec.ICustomUserDetailsService;
 import com.travellog.travellog.services.spec.IProfileService;
 import org.springframework.stereotype.Service;
 
@@ -16,17 +16,20 @@ import java.util.Optional;
 @Service
 public class ProfileServiceImpl implements IProfileService {
     private final IProfileRepository profileRepository;
+    private final ICustomUserDetailsService customUserDetailsService;
     private final ConversionConfiguration conversionConfiguration;
     private final IUserRepository userRepository;
 
-    public ProfileServiceImpl(IProfileRepository profileRepository, ConversionConfiguration conversionConfiguration, IUserRepository userRepository) {
+    public ProfileServiceImpl(IProfileRepository profileRepository, ICustomUserDetailsService customUserDetailsService, ConversionConfiguration conversionConfiguration, IUserRepository userRepository) {
         this.profileRepository = profileRepository;
+        this.customUserDetailsService = customUserDetailsService;
         this.conversionConfiguration = conversionConfiguration;
         this.userRepository = userRepository;
     }
 
     @Override
     public ProfileDetailDto createProfile(Integer userId, CreateProfileDto createProfileDto) {
+        System.out.println("logged in: "  + customUserDetailsService.getAuthenticatedUser().get().getUsername());
         Optional<User> user = userRepository.findById(userId);
         System.out.println("User: " + user.get().getUsername());
         Profile profile = conversionConfiguration.convert(createProfileDto, Profile.class);
