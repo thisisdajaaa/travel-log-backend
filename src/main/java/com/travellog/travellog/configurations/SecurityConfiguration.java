@@ -1,7 +1,6 @@
 package com.travellog.travellog.configurations;
 
 import com.travellog.travellog.helpers.JWTAuthenticationFilterHelper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -41,7 +40,6 @@ public class SecurityConfiguration {
     private final JWTAuthenticationFilterHelper jwtAuthenticationFilterHelper;
     private final LogoutHandler logoutHandler;
 
-    @Autowired
     public SecurityConfiguration(AuthenticationProvider authenticationProvider,
             JWTAuthenticationFilterHelper jwtAuthenticationFilterHelper, LogoutHandler logoutHandler) {
         this.authenticationProvider = authenticationProvider;
@@ -76,5 +74,4 @@ public class SecurityConfiguration {
 
         return http.build();
     }
-
 }

@@ -6,10 +6,9 @@ import com.travellog.travellog.dtos.CreateUserDto;
 import com.travellog.travellog.dtos.UserDetailDto;
 import com.travellog.travellog.models.Role;
 import com.travellog.travellog.models.User;
-import com.travellog.travellog.repositories.RoleRepository;
-import com.travellog.travellog.repositories.UserRepository;
-import com.travellog.travellog.services.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.travellog.travellog.repositories.IRoleRepository;
+import com.travellog.travellog.repositories.IUserRepository;
+import com.travellog.travellog.services.spec.IUserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,15 +16,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Service
-public class UserServiceImpl implements UserService {
-    private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
+public class UserServiceImpl implements IUserService {
+    private final IUserRepository userRepository;
+    private final IRoleRepository roleRepository;
     private final ConversionConfiguration conversionConfiguration;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
-    @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
-            ConversionConfiguration conversionConfiguration, BCryptPasswordEncoder bCryptPasswordEncoder) {
+    public UserServiceImpl(IUserRepository userRepository, IRoleRepository roleRepository,
+                           ConversionConfiguration conversionConfiguration, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.conversionConfiguration = conversionConfiguration;
@@ -41,7 +39,7 @@ public class UserServiceImpl implements UserService {
         user.setPassword(bCryptPasswordEncoder.encode(createUserDto.getPassword()));
 
         User savedUser = userRepository.save(user);
-        return new UserDetailDto(savedUser.getId(), savedUser.getUsername(), savedUser.getEmail());
+        return conversionConfiguration.convert(savedUser, UserDetailDto.class);
     }
 
     @Override

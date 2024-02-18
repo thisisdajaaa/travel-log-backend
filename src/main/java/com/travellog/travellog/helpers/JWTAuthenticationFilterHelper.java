@@ -1,7 +1,7 @@
 package com.travellog.travellog.helpers;
 
-import com.travellog.travellog.repositories.TokenRepository;
-import com.travellog.travellog.services.JWTService;
+import com.travellog.travellog.repositories.ITokenRepository;
+import com.travellog.travellog.services.spec.IJWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +9,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,13 +21,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class JWTAuthenticationFilterHelper extends OncePerRequestFilter {
 
-    private final JWTService jwtService;
+    private final IJWTService jwtService;
     private final UserDetailsService userDetailsService;
-    private final TokenRepository tokenRepository;
+    private final ITokenRepository tokenRepository;
 
-    @Autowired
-    public JWTAuthenticationFilterHelper(JWTService jwtService, UserDetailsService userDetailsService,
-            TokenRepository tokenRepository) {
+    public JWTAuthenticationFilterHelper(IJWTService jwtService, UserDetailsService userDetailsService,
+            ITokenRepository tokenRepository) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
         this.tokenRepository = tokenRepository;
@@ -39,41 +37,38 @@ public class JWTAuthenticationFilterHelper extends OncePerRequestFilter {
             @NonNull HttpServletRequest request,
             @NonNull HttpServletResponse response,
             @NonNull FilterChain filterChain) throws ServletException, IOException {
-        if (request.getServletPath().contains("/api/v1/auth")) {
-            filterChain.doFilter(request, response);
-            return;
-        }
-
         final String authHeader = request.getHeader("Authorization");
-        final String jwt;
-        final String userEmail;
+        final String jwt = authHeader.substring(7);
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
+        String userEmail = "";
+
+        try {
+            userEmail = jwtService.extractUsername(jwt);
+        } catch (Exception e) {
+            ResponseHelper.respondWithUnauthorizedError(response, "JWT token is not valid.");
             return;
         }
-
-        jwt = authHeader.substring(7);
-
-        userEmail = jwtService.extractUsername(jwt);
 
         if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
+            if (!jwtService.isTokenValid(jwt, userDetails)) {
+                ResponseHelper.respondWithUnauthorizedError(response, "JWT token is not valid.");
+                return;
+            }
+
             Boolean isTokenValid = tokenRepository.findByToken(jwt)
                     .map(t -> !t.isExpired() && !t.isRevoked())
                     .orElse(false);
 
-            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities());
-
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (!isTokenValid) {
+                ResponseHelper.respondWithUnauthorizedError(response, "JWT token is expired or revoked.");
+                return;
             }
+
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);

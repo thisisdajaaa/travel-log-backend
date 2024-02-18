@@ -1,6 +1,6 @@
 package com.travellog.travellog.services.impl;
 
-import com.travellog.travellog.services.JWTService;
+import com.travellog.travellog.services.spec.IJWTService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -18,7 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 @Service
-public class JWTServiceImpl implements JWTService {
+public class JWTServiceImpl implements IJWTService {
     @Value("${application.security.jwt.secret-key}")
     private String secretKey;
     @Value("${application.security.jwt.expiration}")

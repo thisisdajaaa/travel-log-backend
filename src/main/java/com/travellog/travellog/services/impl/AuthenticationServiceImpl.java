@@ -8,20 +8,19 @@ import com.travellog.travellog.dtos.AuthenticationDetailDto;
 import com.travellog.travellog.dtos.CreateUserDto;
 import com.travellog.travellog.dtos.LoginDto;
 import com.travellog.travellog.exceptions.UserException;
+import com.travellog.travellog.helpers.ResponseHelper;
 import com.travellog.travellog.models.Role;
 import com.travellog.travellog.models.Token;
 import com.travellog.travellog.models.User;
-import com.travellog.travellog.repositories.RoleRepository;
-import com.travellog.travellog.repositories.TokenRepository;
-import com.travellog.travellog.repositories.UserRepository;
-import com.travellog.travellog.services.AuthenticationService;
-import com.travellog.travellog.services.CustomUserDetailsService;
-import com.travellog.travellog.services.JWTService;
+import com.travellog.travellog.repositories.IRoleRepository;
+import com.travellog.travellog.repositories.ITokenRepository;
+import com.travellog.travellog.repositories.IUserRepository;
+import com.travellog.travellog.services.spec.IAuthenticationService;
+import com.travellog.travellog.services.spec.ICustomUserDetailsService;
+import com.travellog.travellog.services.spec.IJWTService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -29,27 +28,25 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.io.IOException;
 import java.util.List;
 
 @Service
-public class AuthenticationServiceImpl implements AuthenticationService {
-    private final UserRepository userRepository;
-    private final TokenRepository tokenRepository;
-    private final RoleRepository roleRepository;
+public class AuthenticationServiceImpl implements IAuthenticationService {
+    private final IUserRepository userRepository;
+    private final ITokenRepository tokenRepository;
+    private final IRoleRepository roleRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
-    private final JWTService jwtService;
+    private final IJWTService jwtService;
     private final AuthenticationManager authenticationManager;
     private final ConversionConfiguration conversionConfiguration;
-    private final CustomUserDetailsService customUserDetailsService;
+    private final ICustomUserDetailsService customUserDetailsService;
 
-    @Autowired
-    public AuthenticationServiceImpl(UserRepository userRepository, TokenRepository tokenRepository,
-            RoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, JWTService jwtService,
-            AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
-            CustomUserDetailsService customUserDetailsService) {
+    public AuthenticationServiceImpl(IUserRepository userRepository, ITokenRepository tokenRepository,
+                                     IRoleRepository roleRepository, BCryptPasswordEncoder bCryptPasswordEncoder, IJWTService jwtService,
+                                     AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
+                                     ICustomUserDetailsService customUserDetailsService) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.roleRepository = roleRepository;
@@ -135,7 +132,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         final String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid authorization header format!");
+            ResponseHelper.respondWithUnauthorizedError(response, "Invalid authorization header format!");
+            return;
         }
 
         final String refreshToken = authHeader.substring(7);
@@ -150,7 +148,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 .orElseThrow(UserException.NotFoundException::new);
 
         if (!jwtService.isTokenValid(refreshToken, userDetails)) {
-            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Refresh token is not valid.");
+            ResponseHelper.respondWithUnauthorizedError(response, "Refresh token is not valid.");
+            return;
         }
 
         String jwtToken = jwtService.generateToken(userDetails);

@@ -1,4 +1,4 @@
-package com.travellog.travellog.services;
+package com.travellog.travellog.services.spec;
 
 import com.travellog.travellog.dtos.AuthenticationDetailDto;
 import com.travellog.travellog.dtos.CreateUserDto;
@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-public interface AuthenticationService {
+public interface IAuthenticationService {
     AuthenticationDetailDto register(CreateUserDto createUserDto);
 
     AuthenticationDetailDto authenticate(LoginDto loginDto);

@@ -4,11 +4,10 @@ import com.travellog.travellog.dtos.AuthenticationDetailDto;
 import com.travellog.travellog.dtos.CreateUserDto;
 import com.travellog.travellog.dtos.LoginDto;
 import com.travellog.travellog.helpers.ResponseHelper;
-import com.travellog.travellog.services.AuthenticationService;
+import com.travellog.travellog.services.spec.IAuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,26 +20,25 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthenticationController {
-    private final AuthenticationService authenticationService;
+    private final IAuthenticationService authenticationService;
 
-    @Autowired
-    public AuthenticationController(AuthenticationService authenticationService) {
+    public AuthenticationController(IAuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
     @PostMapping("/register")
-    public ResponseEntity<ResponseHelper<AuthenticationDetailDto>> register(
+    public ResponseEntity<ResponseHelper.CustomResponse<AuthenticationDetailDto>> register(
             @Valid @RequestBody CreateUserDto createUserDto) {
         return new ResponseEntity<>(
-                new ResponseHelper<>(true, "Successfully registered user!",
+                new ResponseHelper.CustomResponse<>(true, "Successfully registered user!",
                         authenticationService.register(createUserDto)),
                 HttpStatus.CREATED);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseHelper<AuthenticationDetailDto>> login(@Valid @RequestBody LoginDto loginDto) {
+    public ResponseEntity<ResponseHelper.CustomResponse<AuthenticationDetailDto>> login(@Valid @RequestBody LoginDto loginDto) {
         return new ResponseEntity<>(
-                new ResponseHelper<>(true, "Successfully logged in user!",
+                new ResponseHelper.CustomResponse<>(true, "Successfully logged in user!",
                         authenticationService.authenticate(loginDto)),
                 HttpStatus.OK);
     }

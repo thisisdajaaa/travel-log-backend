@@ -2,9 +2,10 @@ package com.travellog.travellog.services.impl;
 
 import com.travellog.travellog.models.User;
 import com.travellog.travellog.models.UserPrincipal;
-import com.travellog.travellog.repositories.UserRepository;
-import com.travellog.travellog.services.CustomUserDetailsService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.travellog.travellog.repositories.IUserRepository;
+import com.travellog.travellog.services.spec.ICustomUserDetailsService;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -12,11 +13,10 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
-    private final UserRepository userRepository;
+public class CustomUserDetailsServiceImpl implements ICustomUserDetailsService {
+    private final IUserRepository userRepository;
 
-    @Autowired
-    public CustomUserDetailsServiceImpl(UserRepository userRepository) {
+    public CustomUserDetailsServiceImpl(IUserRepository userRepository) {
         this.userRepository = userRepository;
     }
 
@@ -28,5 +28,17 @@ public class CustomUserDetailsServiceImpl implements CustomUserDetailsService {
         User foundUser = userFoundByUsername.orElseGet(userFoundByEmail::get);
 
         return UserPrincipal.create(foundUser);
+    }
+
+    @Override
+    public Optional<User> getAuthenticatedUser() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+
+        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
+            String username = userDetails.getUsername();
+            return userRepository.findByUsername(username);
+        }
+
+        return Optional.empty();
     }
 }
