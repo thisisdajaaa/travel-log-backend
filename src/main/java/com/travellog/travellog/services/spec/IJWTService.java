@@ -1,11 +1,12 @@
-package com.travellog.travellog.services;
+package com.travellog.travellog.services.spec;
 
 import io.jsonwebtoken.Claims;
 import org.springframework.security.core.userdetails.UserDetails;
+
 import java.util.Map;
 import java.util.function.Function;
 
-public interface JWTService {
+public interface IJWTService {
     String extractUsername(String token);
 
     <T> T extractClaim(String token, Function<Claims, T> claimsResolver);
@@ -17,4 +18,6 @@ public interface JWTService {
     String generateRefreshToken(UserDetails userDetails);
 
     boolean isTokenValid(String token, UserDetails userDetails);
+
+    boolean isTokenNotExpiredAndRevoked(String token);
 }

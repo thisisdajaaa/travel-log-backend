@@ -15,24 +15,24 @@ public class ResponseException extends ResponseEntityExceptionHandler {
     @ExceptionHandler({
             UserException.NotFoundException.class,
     })
-    public final ResponseEntity<ResponseHelper<Object>> handleNotFoundException(RuntimeException ex) {
+    public final ResponseEntity<ResponseHelper.CustomResponse<Object>> handleNotFoundException(RuntimeException ex) {
         return buildResponse(null, ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({
             UserException.AlreadyExistsException.class,
     })
-    public final ResponseEntity<ResponseHelper<Object>> handleAlreadyExistsException(RuntimeException ex) {
+    public final ResponseEntity<ResponseHelper.CustomResponse<Object>> handleAlreadyExistsException(RuntimeException ex) {
         return buildResponse(null, ex.getMessage(), HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(IOException.class)
-    public final ResponseEntity<ResponseHelper<Object>> handleIOException(IOException ex) {
+    public final ResponseEntity<ResponseHelper.CustomResponse<Object>> handleIOException(IOException ex) {
         return buildResponse(null, ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private ResponseEntity<ResponseHelper<Object>> buildResponse(Object data, String message, HttpStatus status) {
-        ResponseHelper<Object> response = new ResponseHelper<>(false, message, data);
+    private ResponseEntity<ResponseHelper.CustomResponse<Object>> buildResponse(Object data, String message, HttpStatus status) {
+        ResponseHelper.CustomResponse<Object> response = new ResponseHelper.CustomResponse<>(false, message, data);
         return new ResponseEntity<>(response, status);
     }
 

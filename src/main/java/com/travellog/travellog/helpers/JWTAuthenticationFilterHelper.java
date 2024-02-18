@@ -1,7 +1,6 @@
 package com.travellog.travellog.helpers;
 
-import com.travellog.travellog.repositories.TokenRepository;
-import com.travellog.travellog.services.JWTService;
+import com.travellog.travellog.services.spec.IJWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.NonNull;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -22,16 +20,12 @@ import org.springframework.web.filter.OncePerRequestFilter;
 @Component
 public class JWTAuthenticationFilterHelper extends OncePerRequestFilter {
 
-    private final JWTService jwtService;
+    private final IJWTService jwtService;
     private final UserDetailsService userDetailsService;
-    private final TokenRepository tokenRepository;
 
-    @Autowired
-    public JWTAuthenticationFilterHelper(JWTService jwtService, UserDetailsService userDetailsService,
-            TokenRepository tokenRepository) {
+    public JWTAuthenticationFilterHelper(IJWTService jwtService, UserDetailsService userDetailsService) {
         this.jwtService = jwtService;
         this.userDetailsService = userDetailsService;
-        this.tokenRepository = tokenRepository;
     }
 
     @Override
@@ -55,25 +49,31 @@ public class JWTAuthenticationFilterHelper extends OncePerRequestFilter {
 
         jwt = authHeader.substring(7);
 
-        userEmail = jwtService.extractUsername(jwt);
+        try {
+            userEmail = jwtService.extractUsername(jwt);
+        } catch (Exception e) {
+            ResponseHelper.respondWithUnauthorizedError(response, "JWT token is not valid.");
+            return;
+        }
 
-        if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
+        if (SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
-            Boolean isTokenValid = tokenRepository.findByToken(jwt)
-                    .map(t -> !t.isExpired() && !t.isRevoked())
-                    .orElse(false);
-
-            if (jwtService.isTokenValid(jwt, userDetails) && isTokenValid) {
-                UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                        userDetails,
-                        null,
-                        userDetails.getAuthorities());
-
-                authToken.setDetails(
-                        new WebAuthenticationDetailsSource().buildDetails(request));
-
-                SecurityContextHolder.getContext().setAuthentication(authToken);
+            if (!jwtService.isTokenValid(jwt, userDetails)) {
+                ResponseHelper.respondWithUnauthorizedError(response, "JWT token is not valid.");
+                return;
             }
+
+            boolean isTokenNotExpiredAndRevoked = jwtService.isTokenNotExpiredAndRevoked(jwt);
+
+            if (!isTokenNotExpiredAndRevoked) {
+                ResponseHelper.respondWithUnauthorizedError(response, "JWT token is expired or revoked.");
+                return;
+            }
+
+            UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
+                    userDetails, null, userDetails.getAuthorities());
+            authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+            SecurityContextHolder.getContext().setAuthentication(authToken);
         }
 
         filterChain.doFilter(request, response);

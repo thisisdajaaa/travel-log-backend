@@ -37,7 +37,7 @@ public class GlobalException extends ResponseEntityExceptionHandler {
             errors.put(globalError.getObjectName(), globalError.getDefaultMessage());
         }
 
-        ResponseHelper<Map<String, String>> response = new ResponseHelper<>(false, "Validation failed", errors);
+        ResponseHelper.CustomResponse<Map<String, String>> response = new ResponseHelper.CustomResponse<>(false, "Validation failed", errors);
 
         return new ResponseEntity<>(response, headers, HttpStatus.BAD_REQUEST);
     }

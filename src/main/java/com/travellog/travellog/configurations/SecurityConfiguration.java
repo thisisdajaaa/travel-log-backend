@@ -1,7 +1,6 @@
 package com.travellog.travellog.configurations;
 
 import com.travellog.travellog.helpers.JWTAuthenticationFilterHelper;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,19 +28,29 @@ public class SecurityConfiguration {
 
     @Value("#{'${cors.allowed-methods}'.split(',')}")
     private List<String> allowedMethods;
+
     @Value("#{'${cors.allowed-headers}'.split(',')}")
     private List<String> allowedHeaders;
 
     @Value("#{'${cors.exposed-headers}'.split(',')}")
     private List<String> exposedHeaders;
 
-    // TODO need to configure swagger ui only in development environment.
-    private static final String[] WHITE_LIST_URL = { "/api/v1/auth/**", "/swagger-ui/**" , "/v3/**"};
+    private static final String[] WHITE_LIST_URL = { "/api/v1/auth/**",
+            "/v2/api-docs",
+            "/v3/api-docs",
+            "/v3/api-docs/**",
+            "/swagger-resources",
+            "/swagger-resources/**",
+            "/configuration/ui",
+            "/configuration/security",
+            "/swagger-ui/**",
+            "/webjars/**",
+            "/swagger-ui.html" };
+
     private final AuthenticationProvider authenticationProvider;
     private final JWTAuthenticationFilterHelper jwtAuthenticationFilterHelper;
     private final LogoutHandler logoutHandler;
 
-    @Autowired
     public SecurityConfiguration(AuthenticationProvider authenticationProvider,
             JWTAuthenticationFilterHelper jwtAuthenticationFilterHelper, LogoutHandler logoutHandler) {
         this.authenticationProvider = authenticationProvider;
@@ -76,5 +85,4 @@ public class SecurityConfiguration {
 
         return http.build();
     }
-
 }

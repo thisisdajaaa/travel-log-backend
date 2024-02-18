@@ -1,21 +1,19 @@
 package com.travellog.travellog.services.impl;
 
 import com.travellog.travellog.models.Token;
-import com.travellog.travellog.repositories.TokenRepository;
-import com.travellog.travellog.services.LogoutService;
+import com.travellog.travellog.repositories.ITokenRepository;
+import com.travellog.travellog.services.spec.ILogoutService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LogoutServiceImpl implements LogoutService {
-    private final TokenRepository tokenRepository;
+public class LogoutServiceImpl implements ILogoutService {
+    private final ITokenRepository tokenRepository;
 
-    @Autowired
-    public LogoutServiceImpl(TokenRepository tokenRepository) {
+    public LogoutServiceImpl(ITokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
     }
 
