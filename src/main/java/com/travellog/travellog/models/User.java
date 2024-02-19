@@ -12,28 +12,32 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = { "role", "tokens", "travelLogs" })
 public class User extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "Username", nullable = false, length = 20)
+    @Column(name = "username", nullable = false, unique = true, length = 20)
     @JsonIgnore
     private String username;
 
-    @Column(name = "Password", nullable = false)
+    @Column(name = "password", nullable = false)
     @JsonIgnore
     private String password;
 
-    @Column(name = "Email", nullable = false, unique = true)
+    @Column(name = "email", nullable = false, unique = true)
     @JsonIgnore
     private String email;
 
     @ManyToOne
-    @JoinColumn(name = "RoleId", nullable = false)
+    @JoinColumn(name = "role_id", nullable = false)
     @JsonIgnore
     private Role role;
 
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
+
+    @OneToMany(mappedBy = "user")
+    private List<TravelLog> travelLogs;
 }

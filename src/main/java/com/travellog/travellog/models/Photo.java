@@ -3,25 +3,28 @@ package com.travellog.travellog.models;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
-import java.util.Set;
 
 @Entity
-@Table(name = "role")
+@Table(name = "photo")
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = { "users" })
-public class Role extends Audit {
+@ToString(exclude = { "travelLog" })
+public class Photo extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "name")
-    private String name;
+    @Column(name = "photo_url", nullable = false)
+    private String photoUrl;
 
-    @OneToMany(mappedBy = "role")
+    @Column(name = "description")
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "travel_log_id", nullable = false)
     @JsonIgnore
-    private Set<User> users;
+    private TravelLog travelLog;
 }

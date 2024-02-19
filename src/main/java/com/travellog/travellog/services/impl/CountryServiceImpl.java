@@ -1,11 +1,12 @@
 package com.travellog.travellog.services.impl;
 
+import com.travellog.travellog.exceptions.CountryException;
 import com.travellog.travellog.services.spec.ICountryService;
 import org.springframework.stereotype.Service;
 
 import com.travellog.travellog.configurations.ConversionConfiguration;
-import com.travellog.travellog.dtos.CountryDetailDto;
-import com.travellog.travellog.dtos.CreateCountryDto;
+import com.travellog.travellog.dtos.country.CountryDetailDto;
+import com.travellog.travellog.dtos.country.CreateCountryDto;
 import com.travellog.travellog.models.Country;
 import com.travellog.travellog.repositories.ICountryRepository;
 
@@ -39,6 +40,14 @@ public class CountryServiceImpl implements ICountryService {
         }
 
         return mappedCountries;
+    }
+
+    @Override
+    public CountryDetailDto getCountryById(Integer id) {
+        Country country = countryRepository.findById(id).orElseThrow(CountryException.NotFoundException::new);
+
+        return conversionConfiguration.convert(country, CountryDetailDto.class);
+
     }
 
     @Override

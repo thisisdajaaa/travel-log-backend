@@ -1,4 +1,4 @@
-package com.travellog.travellog.dtos;
+package com.travellog.travellog.dtos.role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class RoleDetailDto {
     private Integer id;
-    private String roleName;
+    private String name;
 }

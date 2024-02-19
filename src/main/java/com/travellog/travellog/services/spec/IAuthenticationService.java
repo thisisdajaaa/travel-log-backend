@@ -1,8 +1,8 @@
 package com.travellog.travellog.services.spec;
 
-import com.travellog.travellog.dtos.AuthenticationDetailDto;
-import com.travellog.travellog.dtos.CreateUserDto;
-import com.travellog.travellog.dtos.LoginDto;
+import com.travellog.travellog.dtos.authentication.AuthenticationDetailDto;
+import com.travellog.travellog.dtos.user.CreateUserDto;
+import com.travellog.travellog.dtos.authentication.LoginDto;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 

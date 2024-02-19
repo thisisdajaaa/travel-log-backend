@@ -1,4 +1,4 @@
-package com.travellog.travellog.dtos;
+package com.travellog.travellog.dtos.role;
 
 import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 @Builder
 public class CreateRoleDto {
     @NotEmpty(message = "Role name field should not be empty!")
-    private String roleName;
+    private String name;
 }

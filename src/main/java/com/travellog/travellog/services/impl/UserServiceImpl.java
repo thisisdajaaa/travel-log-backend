@@ -2,8 +2,9 @@ package com.travellog.travellog.services.impl;
 
 import com.travellog.travellog.configurations.ConversionConfiguration;
 import com.travellog.travellog.constants.RoleEnum;
-import com.travellog.travellog.dtos.CreateUserDto;
-import com.travellog.travellog.dtos.UserDetailDto;
+import com.travellog.travellog.dtos.user.CreateUserDto;
+import com.travellog.travellog.dtos.user.UserDetailDto;
+import com.travellog.travellog.exceptions.UserException;
 import com.travellog.travellog.models.Role;
 import com.travellog.travellog.models.User;
 import com.travellog.travellog.repositories.IRoleRepository;
@@ -14,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserServiceImpl implements IUserService {
@@ -23,7 +25,7 @@ public class UserServiceImpl implements IUserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public UserServiceImpl(IUserRepository userRepository, IRoleRepository roleRepository,
-                           ConversionConfiguration conversionConfiguration, BCryptPasswordEncoder bCryptPasswordEncoder) {
+            ConversionConfiguration conversionConfiguration, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.conversionConfiguration = conversionConfiguration;
@@ -31,9 +33,17 @@ public class UserServiceImpl implements IUserService {
     }
 
     @Override
-    public UserDetailDto createUser(CreateUserDto createUserDto) {
+    public UserDetailDto createUser(CreateUserDto createUserDto, RoleEnum roleEnum) {
         User user = conversionConfiguration.convert(createUserDto, User.class);
-        Role foundRole = roleRepository.findByRoleName(String.valueOf(RoleEnum.USER));
+
+        Optional<User> foundUserByUsername = userRepository.findByUsername(createUserDto.getUsername());
+        Optional<User> foundUserByEmail = userRepository.findByEmail(createUserDto.getEmail());
+
+        if (foundUserByUsername.isPresent() || foundUserByEmail.isPresent()) {
+            throw new UserException.AlreadyExistsException();
+        }
+
+        Role foundRole = roleRepository.findByName(String.valueOf(roleEnum));
 
         user.setRole(foundRole);
         user.setPassword(bCryptPasswordEncoder.encode(createUserDto.getPassword()));
@@ -52,5 +62,17 @@ public class UserServiceImpl implements IUserService {
         }
 
         return formattedUsers;
+    }
+
+    @Override
+    public boolean isUserListEmpty() {
+        return userRepository.count() == 0;
+    }
+
+    @Override
+    public UserDetailDto getUserById(Integer id) {
+        User user = userRepository.findById(id).orElseThrow(UserException.NotFoundException::new);
+
+        return conversionConfiguration.convert(user, UserDetailDto.class);
     }
 }

@@ -1,4 +1,4 @@
-package com.travellog.travellog.dtos;
+package com.travellog.travellog.dtos.authentication;
 
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;

@@ -1,4 +1,4 @@
-package com.travellog.travellog.dtos;
+package com.travellog.travellog.dtos.country;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;

@@ -1,5 +1,6 @@
 package com.travellog.travellog.services.impl;
 
+import com.travellog.travellog.exceptions.UserException;
 import com.travellog.travellog.models.User;
 import com.travellog.travellog.models.UserPrincipal;
 import com.travellog.travellog.repositories.IUserRepository;
@@ -31,14 +32,14 @@ public class CustomUserDetailsServiceImpl implements ICustomUserDetailsService {
     }
 
     @Override
-    public Optional<User> getAuthenticatedUser() {
+    public User getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication != null && authentication.getPrincipal() instanceof UserDetails userDetails) {
-            String username = userDetails.getUsername();
-            return userRepository.findByUsername(username);
+        if (authentication == null || !(authentication.getPrincipal() instanceof UserDetails userDetails)) {
+            throw new UserException.NotFoundException("No authenticated user found.");
         }
 
-        return Optional.empty();
+        return userRepository.findByUsername(userDetails.getUsername())
+                .orElseThrow(() -> new UserException.NotFoundException(("Authenticated user not found in database.")));
     }
 }
