@@ -1,8 +1,8 @@
 package com.travellog.travellog.controllers;
 
-import com.travellog.travellog.dtos.AuthenticationDetailDto;
-import com.travellog.travellog.dtos.CreateUserDto;
-import com.travellog.travellog.dtos.LoginDto;
+import com.travellog.travellog.dtos.authentication.AuthenticationDetailDto;
+import com.travellog.travellog.dtos.user.CreateUserDto;
+import com.travellog.travellog.dtos.authentication.LoginDto;
 import com.travellog.travellog.helpers.ResponseHelper;
 import com.travellog.travellog.services.spec.IAuthenticationService;
 import jakarta.servlet.http.HttpServletRequest;
@@ -36,7 +36,8 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<ResponseHelper.CustomResponse<AuthenticationDetailDto>> login(@Valid @RequestBody LoginDto loginDto) {
+    public ResponseEntity<ResponseHelper.CustomResponse<AuthenticationDetailDto>> login(
+            @Valid @RequestBody LoginDto loginDto) {
         return new ResponseEntity<>(
                 new ResponseHelper.CustomResponse<>(true, "Successfully logged in user!",
                         authenticationService.authenticate(loginDto)),

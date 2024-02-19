@@ -1,4 +1,4 @@
-package com.travellog.travellog.dtos;
+package com.travellog.travellog.dtos.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class RoleDetailDto {
+public class UserDetailDto {
     private Integer id;
-    private String name;
+
+    private String username;
+
+    private String email;
 }

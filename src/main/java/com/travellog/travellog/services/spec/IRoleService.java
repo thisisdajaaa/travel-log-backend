@@ -1,7 +1,7 @@
 package com.travellog.travellog.services.spec;
 
-import com.travellog.travellog.dtos.CreateRoleDto;
-import com.travellog.travellog.dtos.RoleDetailDto;
+import com.travellog.travellog.dtos.role.CreateRoleDto;
+import com.travellog.travellog.dtos.role.RoleDetailDto;
 
 public interface IRoleService {
     RoleDetailDto createRole(CreateRoleDto createRoleDto);

@@ -1,8 +1,8 @@
 package com.travellog.travellog.services.impl;
 
 import com.travellog.travellog.configurations.ConversionConfiguration;
-import com.travellog.travellog.dtos.CreateRoleDto;
-import com.travellog.travellog.dtos.RoleDetailDto;
+import com.travellog.travellog.dtos.role.CreateRoleDto;
+import com.travellog.travellog.dtos.role.RoleDetailDto;
 import com.travellog.travellog.models.Role;
 import com.travellog.travellog.repositories.IRoleRepository;
 import com.travellog.travellog.services.spec.IRoleService;

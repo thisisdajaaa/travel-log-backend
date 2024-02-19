@@ -1,7 +1,7 @@
 package com.travellog.travellog.services.spec;
 
-import com.travellog.travellog.dtos.CountryDetailDto;
-import com.travellog.travellog.dtos.CreateCountryDto;
+import com.travellog.travellog.dtos.country.CountryDetailDto;
+import com.travellog.travellog.dtos.country.CreateCountryDto;
 
 import java.util.List;
 
@@ -11,4 +11,6 @@ public interface ICountryService {
     List<CountryDetailDto> getCountries();
 
     boolean isCountryListEmpty();
+
+    CountryDetailDto getCountryById(Integer id);
 }

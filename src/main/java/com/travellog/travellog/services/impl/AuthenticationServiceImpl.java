@@ -4,16 +4,14 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.travellog.travellog.configurations.ConversionConfiguration;
 import com.travellog.travellog.constants.RoleEnum;
 import com.travellog.travellog.constants.TokenTypeEnum;
-import com.travellog.travellog.dtos.AuthenticationDetailDto;
-import com.travellog.travellog.dtos.CreateUserDto;
-import com.travellog.travellog.dtos.LoginDto;
-import com.travellog.travellog.dtos.UserDetailDto;
+import com.travellog.travellog.dtos.authentication.AuthenticationDetailDto;
+import com.travellog.travellog.dtos.user.CreateUserDto;
+import com.travellog.travellog.dtos.authentication.LoginDto;
+import com.travellog.travellog.dtos.user.UserDetailDto;
 import com.travellog.travellog.exceptions.UserException;
 import com.travellog.travellog.helpers.ResponseHelper;
-import com.travellog.travellog.models.Role;
 import com.travellog.travellog.models.Token;
 import com.travellog.travellog.models.User;
-import com.travellog.travellog.repositories.IRoleRepository;
 import com.travellog.travellog.repositories.ITokenRepository;
 import com.travellog.travellog.repositories.IUserRepository;
 import com.travellog.travellog.services.spec.IAuthenticationService;
@@ -28,7 +26,6 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -44,9 +41,10 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private final ICustomUserDetailsService customUserDetailsService;
     private final IUserService userService;
 
-    public AuthenticationServiceImpl(IUserRepository userRepository, ITokenRepository tokenRepository, IJWTService jwtService,
-                                     AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
-                                     ICustomUserDetailsService customUserDetailsService, IUserService userService) {
+    public AuthenticationServiceImpl(IUserRepository userRepository, ITokenRepository tokenRepository,
+            IJWTService jwtService,
+            AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
+            ICustomUserDetailsService customUserDetailsService, IUserService userService) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.jwtService = jwtService;

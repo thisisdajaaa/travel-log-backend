@@ -1,5 +1,6 @@
-package com.travellog.travellog.dtos;
+package com.travellog.travellog.dtos.role;
 
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -9,8 +10,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CountryDetailDto {
-    private Integer id;
+public class CreateRoleDto {
+    @NotEmpty(message = "Role name field should not be empty!")
     private String name;
-    private String code;
 }

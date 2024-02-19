@@ -11,6 +11,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = { "travelLog" })
 public class Photo extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

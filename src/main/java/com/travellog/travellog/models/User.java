@@ -12,12 +12,13 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = { "role", "tokens", "travelLogs" })
 public class User extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name = "username", nullable = false, length = 20)
+    @Column(name = "username", nullable = false, unique = true, length = 20)
     @JsonIgnore
     private String username;
 

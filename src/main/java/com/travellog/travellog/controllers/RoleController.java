@@ -1,7 +1,7 @@
 package com.travellog.travellog.controllers;
 
-import com.travellog.travellog.dtos.CreateRoleDto;
-import com.travellog.travellog.dtos.RoleDetailDto;
+import com.travellog.travellog.dtos.role.CreateRoleDto;
+import com.travellog.travellog.dtos.role.RoleDetailDto;
 import com.travellog.travellog.helpers.ResponseHelper;
 import com.travellog.travellog.services.spec.IRoleService;
 import jakarta.validation.Valid;
@@ -22,9 +22,11 @@ public class RoleController {
     }
 
     @PostMapping
-    public ResponseEntity<ResponseHelper.CustomResponse<RoleDetailDto>> createRole(@Valid @RequestBody CreateRoleDto createRoleDto) {
+    public ResponseEntity<ResponseHelper.CustomResponse<RoleDetailDto>> createRole(
+            @Valid @RequestBody CreateRoleDto createRoleDto) {
         return new ResponseEntity<>(
-                new ResponseHelper.CustomResponse<>(true, "Successfully created role!", roleService.createRole(createRoleDto)),
+                new ResponseHelper.CustomResponse<>(true, "Successfully created role!",
+                        roleService.createRole(createRoleDto)),
                 HttpStatus.CREATED);
     }
 }

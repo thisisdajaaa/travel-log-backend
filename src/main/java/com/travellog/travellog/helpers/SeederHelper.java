@@ -2,9 +2,9 @@ package com.travellog.travellog.helpers;
 
 import com.travellog.travellog.constants.CountryListEnum;
 import com.travellog.travellog.constants.RoleEnum;
-import com.travellog.travellog.dtos.CreateCountryDto;
-import com.travellog.travellog.dtos.CreateRoleDto;
-import com.travellog.travellog.dtos.CreateUserDto;
+import com.travellog.travellog.dtos.country.CreateCountryDto;
+import com.travellog.travellog.dtos.role.CreateRoleDto;
+import com.travellog.travellog.dtos.user.CreateUserDto;
 import com.travellog.travellog.services.spec.ICountryService;
 import com.travellog.travellog.services.spec.IRoleService;
 import com.travellog.travellog.services.spec.IUserService;

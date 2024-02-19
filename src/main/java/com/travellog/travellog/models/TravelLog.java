@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.Instant;
 import java.util.List;
 
 @Entity
@@ -13,6 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = { "user", "country", "photos" })
 public class TravelLog extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,6 +25,9 @@ public class TravelLog extends Audit {
 
     @Column(name = "description")
     private String description;
+
+    @Column(name = "visit_date", nullable = false)
+    private Instant visitDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)

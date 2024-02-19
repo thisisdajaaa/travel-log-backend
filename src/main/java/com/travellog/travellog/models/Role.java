@@ -12,6 +12,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = { "users" })
 public class Role extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

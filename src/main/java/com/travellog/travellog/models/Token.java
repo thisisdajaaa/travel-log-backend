@@ -11,6 +11,7 @@ import lombok.*;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString(exclude = { "user" })
 public class Token extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

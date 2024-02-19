@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = { "travelLogs" })
 public class Country extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

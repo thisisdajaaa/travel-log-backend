@@ -1,7 +1,7 @@
 package com.travellog.travellog.controllers;
 
-import com.travellog.travellog.dtos.CountryDetailDto;
-import com.travellog.travellog.dtos.CreateCountryDto;
+import com.travellog.travellog.dtos.country.CountryDetailDto;
+import com.travellog.travellog.dtos.country.CreateCountryDto;
 import com.travellog.travellog.helpers.ResponseHelper;
 import com.travellog.travellog.services.spec.ICountryService;
 import jakarta.validation.Valid;
@@ -24,14 +24,16 @@ public class CountryController {
     public ResponseEntity<ResponseHelper.CustomResponse<CountryDetailDto>> createCountry(
             @Valid @RequestBody CreateCountryDto countryDto) {
         return new ResponseEntity<>(
-                new ResponseHelper.CustomResponse<>(true, "Successfully created country!", countryService.createCountry(countryDto)),
+                new ResponseHelper.CustomResponse<>(true, "Successfully created country!",
+                        countryService.createCountry(countryDto)),
                 HttpStatus.CREATED);
     }
 
     @GetMapping
     public ResponseEntity<ResponseHelper.CustomResponse<List<CountryDetailDto>>> getCountries() {
         return new ResponseEntity<>(
-                new ResponseHelper.CustomResponse<>(true, "Successfully retrieved all countries!", countryService.getCountries()),
+                new ResponseHelper.CustomResponse<>(true, "Successfully retrieved all countries!",
+                        countryService.getCountries()),
                 HttpStatus.OK);
     }
 }
