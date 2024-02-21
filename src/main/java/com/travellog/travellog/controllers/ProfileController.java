@@ -1,8 +1,8 @@
 package com.travellog.travellog.controllers;
 
-import com.travellog.travellog.dtos.CreateProfileDto;
-import com.travellog.travellog.dtos.ProfileDetailDto;
-import com.travellog.travellog.dtos.UpdateProfileDto;
+import com.travellog.travellog.dtos.profile.CreateProfileDto;
+import com.travellog.travellog.dtos.profile.ProfileDetailDto;
+import com.travellog.travellog.dtos.profile.UpdateProfileDto;
 import com.travellog.travellog.helpers.ResponseHelper;
 import com.travellog.travellog.models.User;
 import com.travellog.travellog.services.spec.ICustomUserDetailsService;
@@ -26,7 +26,6 @@ public class ProfileController {
 
     public ProfileController(IProfileService profileService, ICustomUserDetailsService userDetailsService) {
         this.profileService = profileService;
-
         this.userDetailService = userDetailsService;
     }
 
@@ -35,24 +34,26 @@ public class ProfileController {
             @Valid @RequestBody CreateProfileDto createProfileDto) {
         return new ResponseEntity<>(
                 new ResponseHelper.CustomResponse<>(true, "Successfully created profile!",
-                        profileService.createProfile(userDetailService.getAuthenticatedUser().get().getId(),
+                        profileService.createProfile(userDetailService.getAuthenticatedUser().getId(),
                                 createProfileDto)),
                 HttpStatus.CREATED);
     }
 
     @DeleteMapping
     public ResponseEntity<ResponseHelper.CustomResponse<String>> deleteProfile() {
-        User user = userDetailService.getAuthenticatedUser().get();
+        User user = userDetailService.getAuthenticatedUser();
+
         profileService.deleteProfileById(user);
+
         return new ResponseEntity<>(
-                new ResponseHelper.CustomResponse<>(true, "Successfully deleted role!", ""),
+                new ResponseHelper.CustomResponse<>(true, "Successfully deleted profile!", null),
                 HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping
     public ResponseEntity<ResponseHelper.CustomResponse<ProfileDetailDto>> updateProfile(
             @Valid @RequestBody UpdateProfileDto updateProfileDto) {
-        User user = userDetailService.getAuthenticatedUser().get();
+        User user = userDetailService.getAuthenticatedUser();
         return new ResponseEntity<>(
                 new ResponseHelper.CustomResponse<>(true, "Successfully updated profile!",
                         profileService.updateProfile(user, updateProfileDto)),
@@ -61,7 +62,8 @@ public class ProfileController {
 
     @GetMapping
     public ResponseEntity<ResponseHelper.CustomResponse<ProfileDetailDto>> fetchProfileDetail() {
-        User user = userDetailService.getAuthenticatedUser().get();
+        User user = userDetailService.getAuthenticatedUser();
+
         return new ResponseEntity<>(
                 new ResponseHelper.CustomResponse<>(true, "Successfully fetched profile!",
                         profileService.findProfileByUserId(user.getId())),

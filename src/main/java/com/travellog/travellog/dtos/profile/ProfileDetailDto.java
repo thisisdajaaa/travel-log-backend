@@ -1,20 +1,22 @@
-package com.travellog.travellog.dtos;
+package com.travellog.travellog.dtos.profile;
 
 import java.sql.Date;
 
 import com.travellog.travellog.constants.GenderEnum;
 
-import jakarta.validation.constraints.Past;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class UpdateProfileDto {
+public class ProfileDetailDto{
+    private Integer id;
 
     private String firstName;
 
@@ -36,6 +38,6 @@ public class UpdateProfileDto {
 
     private String coverImage;
 
-    @Past
     private Date birthDate;
+
 }
