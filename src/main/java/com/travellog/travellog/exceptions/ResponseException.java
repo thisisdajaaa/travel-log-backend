@@ -51,6 +51,20 @@ public class ResponseException extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler({
+            EntityException.NotFoundException.class,
+    })
+    public final ResponseEntity<ResponseHelper.CustomResponse<Object>> handleEntityNotFoundException(RuntimeException ex) {
+        return buildResponse(null, ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({
+            EntityException.AlreadyExistsException.class,
+    })
+    public final ResponseEntity<ResponseHelper.CustomResponse<Object>> handleEntityAlreadyExistsException(RuntimeException ex) {
+        return buildResponse(null, ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(IOException.class)
     public ResponseEntity<ResponseHelper.CustomResponse<Object>> handleIOException(IOException ex) {
         Map<String, String> errors = new HashMap<>();
@@ -71,7 +85,11 @@ public class ResponseException extends ResponseEntityExceptionHandler {
         ResponseHelper.CustomResponse<Object> apiError = new ResponseHelper.CustomResponse<>(false,
                 "An error occurred!", null, errors);
 
-        return handleExceptionInternal(ex, apiError, headers, HttpStatus.BAD_REQUEST, request);
+        return handleExceptionInternal(ex, apiError, headers, HttpStatus.BAD_REQUEST, request);}
+    private ResponseEntity<ResponseHelper.CustomResponse<Object>> buildResponse(Object data, String message,
+            HttpStatus status) {
+        ResponseHelper.CustomResponse<Object> response = new ResponseHelper.CustomResponse<>(false, message, data);
+        return new ResponseEntity<>(response, status);
     }
 
     @Override
