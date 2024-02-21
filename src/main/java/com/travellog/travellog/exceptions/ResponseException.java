@@ -55,14 +55,26 @@ public class ResponseException extends ResponseEntityExceptionHandler {
             EntityException.NotFoundException.class,
     })
     public final ResponseEntity<ResponseHelper.CustomResponse<Object>> handleEntityNotFoundException(RuntimeException ex) {
-        return buildResponse(null, ex.getMessage(), HttpStatus.NOT_FOUND);
+        Map<String, String> errors = new HashMap<>();
+        errors.put("RuntimeException", ex.getMessage());
+
+        ResponseHelper.CustomResponse<Object> response = new ResponseHelper.CustomResponse<>(false,
+                "An error occurred!", null, errors);
+
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler({
             EntityException.AlreadyExistsException.class,
     })
     public final ResponseEntity<ResponseHelper.CustomResponse<Object>> handleEntityAlreadyExistsException(RuntimeException ex) {
-        return buildResponse(null, ex.getMessage(), HttpStatus.CONFLICT);
+        Map<String, String> errors = new HashMap<>();
+        errors.put("RuntimeException", ex.getMessage());
+
+        ResponseHelper.CustomResponse<Object> response = new ResponseHelper.CustomResponse<>(false,
+                "An error occurred!", null, errors);
+
+        return new ResponseEntity<>(response, HttpStatus.CONFLICT);
     }
 
     @ExceptionHandler(IOException.class)
@@ -86,11 +98,6 @@ public class ResponseException extends ResponseEntityExceptionHandler {
                 "An error occurred!", null, errors);
 
         return handleExceptionInternal(ex, apiError, headers, HttpStatus.BAD_REQUEST, request);}
-    private ResponseEntity<ResponseHelper.CustomResponse<Object>> buildResponse(Object data, String message,
-            HttpStatus status) {
-        ResponseHelper.CustomResponse<Object> response = new ResponseHelper.CustomResponse<>(false, message, data);
-        return new ResponseEntity<>(response, status);
-    }
 
     @Override
     protected ResponseEntity<Object> handleMethodArgumentNotValid(MethodArgumentNotValidException ex,

@@ -77,7 +77,7 @@ public class TravelLogController {
 
         return new ResponseEntity<>(
                 new ResponseHelper.CustomResponse<>(isTravelLogDeleted, "Successfully deleted travel log!", null),
-                HttpStatus.OK);
+                HttpStatus.NO_CONTENT);
     }
 
     @PatchMapping("/id/{travelLogId}")
