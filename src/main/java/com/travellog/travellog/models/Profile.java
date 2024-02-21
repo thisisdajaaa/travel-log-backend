@@ -22,6 +22,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Table(name = "profile")
@@ -31,6 +32,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 @Transactional
+@ToString(exclude = {"user"})
 public class Profile extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -42,11 +44,11 @@ public class Profile extends Audit {
     @Column(name= "last_name")
     private String lastName;
 
-    @Column(nullable = false, name = "middle_name")
+    @Column(name = "middle_name")
     private String middleName;
 
+    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    // @Column(nullable = false)
     private GenderEnum sex;
 
     @Column()
@@ -70,7 +72,7 @@ public class Profile extends Audit {
     @Column(name = "birth_date")
     private Date birthDate;
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @OneToOne(optional = false)
     @JoinColumn(name="user_id")
     @JsonIgnore
     private User user;

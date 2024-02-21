@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@ToString(exclude = {"tokens", "travelLogs","role"})
 public class User extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,6 +37,9 @@ public class User extends Audit {
 
     @OneToMany(mappedBy = "user")
     private List<Token> tokens;
+
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL)
+    private Profile profile;
 
     @OneToMany(mappedBy = "user")
     private List<TravelLog> travelLogs;

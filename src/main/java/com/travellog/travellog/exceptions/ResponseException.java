@@ -26,12 +26,27 @@ public class ResponseException extends ResponseEntityExceptionHandler {
         return buildResponse(null, ex.getMessage(), HttpStatus.CONFLICT);
     }
 
+    @ExceptionHandler({
+            EntityException.NotFoundException.class,
+    })
+    public final ResponseEntity<ResponseHelper.CustomResponse<Object>> handleEntityNotFoundException(RuntimeException ex) {
+        return buildResponse(null, ex.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler({
+            EntityException.AlreadyExistsException.class,
+    })
+    public final ResponseEntity<ResponseHelper.CustomResponse<Object>> handleEntityAlreadyExistsException(RuntimeException ex) {
+        return buildResponse(null, ex.getMessage(), HttpStatus.CONFLICT);
+    }
+
     @ExceptionHandler(IOException.class)
     public final ResponseEntity<ResponseHelper.CustomResponse<Object>> handleIOException(IOException ex) {
         return buildResponse(null, ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private ResponseEntity<ResponseHelper.CustomResponse<Object>> buildResponse(Object data, String message, HttpStatus status) {
+    private ResponseEntity<ResponseHelper.CustomResponse<Object>> buildResponse(Object data, String message,
+            HttpStatus status) {
         ResponseHelper.CustomResponse<Object> response = new ResponseHelper.CustomResponse<>(false, message, data);
         return new ResponseEntity<>(response, status);
     }
