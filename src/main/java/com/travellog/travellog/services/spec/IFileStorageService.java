@@ -8,7 +8,7 @@ import com.travellog.travellog.payload.FileResponse;
 
 public interface IFileStorageService {
 
-    AddFileResponse addFile(MultipartFile multipartFile);
+    AddFileResponse addFile(MultipartFile multipartFile, String fileName);
 
     FileResponse getFile(String fileName);
 

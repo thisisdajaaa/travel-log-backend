@@ -1,15 +1,18 @@
 package com.travellog.travellog.services.impl;
 
+import java.awt.image.BufferedImage;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.util.UUID;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import javax.imageio.ImageIO;
+
+import org.apache.commons.compress.utils.FileNameUtils;
 import org.springframework.core.io.InputStreamResource;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,9 +20,7 @@ import com.travellog.travellog.payload.AddFileResponse;
 import com.travellog.travellog.payload.FileResponse;
 import com.travellog.travellog.services.spec.IFileStorageService;
 
-import io.minio.BucketExistsArgs;
 import io.minio.GetObjectArgs;
-import io.minio.ListObjectsArgs;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.StatObjectArgs;
@@ -32,7 +33,7 @@ import jakarta.persistence.EntityNotFoundException;
 public class FileStorageService implements IFileStorageService {
 
     private final String bucketName = "test";
-    private final String path = "hello";
+    private final String path = "hello.jpg";
     private MinioClient minioClient;
 
     private MinioClient getClient() {
@@ -48,13 +49,14 @@ public class FileStorageService implements IFileStorageService {
     }
 
     @Override
-    public AddFileResponse addFile(MultipartFile multipartFile) {
+    public AddFileResponse addFile(MultipartFile multipartFile, String fileName) {
         try {
-            PutObjectArgs args = PutObjectArgs.builder().bucket(bucketName).object(path)
-                    .stream(multipartFile.getInputStream(), multipartFile.getInputStream().available(), -1)
-                    .contentType(multipartFile.getContentType()).build();
-            getClient().putObject(args);
-            Path fullPath = Paths.get(bucketName, path);
+            String extension = FileNameUtils.getExtension(fileName);
+            String uuid = UUID.randomUUID().toString();
+            resizeAndSaveImages(multipartFile.getInputStream(), getClient(), new int[] { 100, 200, 300 }, extension,
+                    uuid,
+                    multipartFile.getContentType());
+            Path fullPath = Paths.get(bucketName, uuid + "." + extension);
             return new AddFileResponse(fullPath.toString());
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -62,7 +64,7 @@ public class FileStorageService implements IFileStorageService {
         return null;
 
     }
-
+;
     @Override
     public FileResponse getFile(String fileName) {
         try {
@@ -101,6 +103,46 @@ public class FileStorageService implements IFileStorageService {
         } catch (Exception e) {
             throw new RuntimeException();
         }
+    }
+
+    private void resizeAndSaveImages(InputStream inputStream, MinioClient minioClient, int[] sizes, String extension,
+            String imageName,
+            String contentType)
+            throws IOException {
+        try {
+            // minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(imageName + "." + extension)
+            //         .stream(inputStream, inputStream.available(), -1).contentType(contentType).build());
+            // save original image
+            BufferedImage originalImage = ImageIO.read(inputStream);
+            // Resize and save images
+            for (int size : sizes) {
+                BufferedImage resizedImage = resize(originalImage, size, size);
+
+                // Convert BufferedImage to InputStream
+                ByteArrayOutputStream os = new ByteArrayOutputStream();
+                ImageIO.write(resizedImage, contentType.split("/")[1], os);
+                InputStream resizedInputStream = new ByteArrayInputStream(os.toByteArray());
+                // Upload image to MinIO
+                minioClient.putObject(
+                        PutObjectArgs.builder()
+                                .bucket(bucketName)
+                                .object(imageName + "_" + size + "." + extension)
+                                .stream(resizedInputStream, resizedInputStream.available(), -1)
+                                .contentType(contentType)
+                                .build());
+                resizedInputStream.close();
+            }
+        } catch (Exception e) {
+            System.out.println("error" + e.getMessage());
+            throw new RuntimeException();
+        }
+    }
+
+    private static BufferedImage resize(BufferedImage originalImage, int targetWidth, int targetHeight) {
+        BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
+        // resizedImage.createGraphics().drawImage(
+        //         originalImage.getScaledInstance(targetWidth, targetHeight, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
+        return originalImage;
     }
 
 }

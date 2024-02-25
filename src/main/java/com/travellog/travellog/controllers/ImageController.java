@@ -35,7 +35,7 @@ public class ImageController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Upload a file")
     public ResponseEntity<AddFileResponse> uploadImage(@RequestParam("image") MultipartFile file){
-        AddFileResponse response = fileStorageService.addFile(file);
+        AddFileResponse response = fileStorageService.addFile(file, file.getOriginalFilename());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
