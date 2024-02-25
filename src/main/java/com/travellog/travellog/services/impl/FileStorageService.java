@@ -16,6 +16,7 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.travellog.travellog.configurations.MinioConfiguration;
 import com.travellog.travellog.payload.AddFileResponse;
 import com.travellog.travellog.payload.FileResponse;
 import com.travellog.travellog.services.spec.IFileStorageService;
@@ -32,20 +33,12 @@ import jakarta.persistence.EntityNotFoundException;
 @Service
 public class FileStorageService implements IFileStorageService {
 
-    private final String bucketName = "test";
-    private final String path = "hello.jpg";
-    private MinioClient minioClient;
+    private  MinioClient minioClient;
+    private  MinioConfiguration minioConfiguration;
 
-    private MinioClient getClient() {
-        if (minioClient == null) {
-            // TODO use jlefebure method for client initialization
-            this.minioClient = MinioClient.builder()
-                    .endpoint("http://localhost:9000")
-                    .credentials("l9oczF1WnOly9wj707QJ", "KgVM0P5KqH1dCKlC4phdwCneygd5h0of3td7b44c")
-                    .build();
-        }
-        // TODO make this client get when it is empty
-        return minioClient;
+    FileStorageService(MinioClient minioClient,MinioConfiguration minioConfiguration ){
+        this.minioClient = minioClient;
+        this.minioConfiguration = minioConfiguration;
     }
 
     @Override
@@ -53,16 +46,15 @@ public class FileStorageService implements IFileStorageService {
         try {
             String extension = FileNameUtils.getExtension(fileName);
             String uuid = UUID.randomUUID().toString();
-            resizeAndSaveImages(multipartFile.getInputStream(), getClient(), new int[] { 100, 200, 300 }, extension,
+            resizeAndSaveImages(multipartFile.getInputStream(), minioClient, new int[] { 100, 200, 300 }, extension,
                     uuid,
                     multipartFile.getContentType());
-            Path fullPath = Paths.get(bucketName, uuid + "." + extension);
+            Path fullPath = Paths.get(minioConfiguration.getMinioBucket(), uuid + "." + extension);
             return new AddFileResponse(fullPath.toString());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
         return null;
-
     }
 ;
     @Override
@@ -72,7 +64,7 @@ public class FileStorageService implements IFileStorageService {
             StatObjectResponse metadata = getMetaData(path.toString());
             // only get object if it is present.
             GetObjectArgs args = GetObjectArgs.builder()
-                    .bucket(bucketName)
+                    .bucket(minioConfiguration.getMinioBucket())
                     .object(fileName.toString())
                     .build();
             InputStream stream = minioClient.getObject(args);
@@ -94,10 +86,10 @@ public class FileStorageService implements IFileStorageService {
     private StatObjectResponse getMetaData(String path) {
         try {
             StatObjectArgs args = StatObjectArgs.builder()
-                    .bucket(this.bucketName)
+                    .bucket(this.minioConfiguration.getMinioBucket())
                     .object(path)
                     .build();
-            return getClient().statObject(args);
+            return minioClient.statObject(args);
         } catch (ErrorResponseException e) {
             throw new EntityNotFoundException("Image");
         } catch (Exception e) {
@@ -110,6 +102,7 @@ public class FileStorageService implements IFileStorageService {
             String contentType)
             throws IOException {
         try {
+            // uncomment below code to save original file.
             // minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(imageName + "." + extension)
             //         .stream(inputStream, inputStream.available(), -1).contentType(contentType).build());
             // save original image
@@ -125,7 +118,7 @@ public class FileStorageService implements IFileStorageService {
                 // Upload image to MinIO
                 minioClient.putObject(
                         PutObjectArgs.builder()
-                                .bucket(bucketName)
+                                .bucket(minioConfiguration.getMinioBucket())
                                 .object(imageName + "_" + size + "." + extension)
                                 .stream(resizedInputStream, resizedInputStream.available(), -1)
                                 .contentType(contentType)
@@ -140,9 +133,9 @@ public class FileStorageService implements IFileStorageService {
 
     private static BufferedImage resize(BufferedImage originalImage, int targetWidth, int targetHeight) {
         BufferedImage resizedImage = new BufferedImage(targetWidth, targetHeight, BufferedImage.TYPE_INT_RGB);
-        // resizedImage.createGraphics().drawImage(
-        //         originalImage.getScaledInstance(targetWidth, targetHeight, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
-        return originalImage;
+        resizedImage.createGraphics().drawImage(
+                originalImage.getScaledInstance(targetWidth, targetHeight, java.awt.Image.SCALE_SMOOTH), 0, 0, null);
+        return resizedImage;
     }
 
 }
