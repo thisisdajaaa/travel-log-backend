@@ -2,6 +2,7 @@ package com.travellog.travellog.services.impl;
 
 import com.travellog.travellog.configurations.ConversionConfiguration;
 import com.travellog.travellog.constants.RoleEnum;
+import com.travellog.travellog.dtos.profile.CreateProfileDto;
 import com.travellog.travellog.dtos.user.CreateUserDto;
 import com.travellog.travellog.dtos.user.UserDetailDto;
 import com.travellog.travellog.exceptions.UserException;
@@ -9,6 +10,7 @@ import com.travellog.travellog.models.Role;
 import com.travellog.travellog.models.User;
 import com.travellog.travellog.repositories.IRoleRepository;
 import com.travellog.travellog.repositories.IUserRepository;
+import com.travellog.travellog.services.spec.IProfileService;
 import com.travellog.travellog.services.spec.IUserService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,13 +23,15 @@ import java.util.Optional;
 public class UserServiceImpl implements IUserService {
     private final IUserRepository userRepository;
     private final IRoleRepository roleRepository;
+    private final IProfileService profileService;
     private final ConversionConfiguration conversionConfiguration;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     public UserServiceImpl(IUserRepository userRepository, IRoleRepository roleRepository,
-            ConversionConfiguration conversionConfiguration, BCryptPasswordEncoder bCryptPasswordEncoder) {
+                           IProfileService profileService, ConversionConfiguration conversionConfiguration, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
+        this.profileService = profileService;
         this.conversionConfiguration = conversionConfiguration;
         this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
@@ -49,6 +53,8 @@ public class UserServiceImpl implements IUserService {
         user.setPassword(bCryptPasswordEncoder.encode(createUserDto.getPassword()));
 
         User savedUser = userRepository.save(user);
+        profileService.createProfile(savedUser.getId(), new CreateProfileDto());
+
         return conversionConfiguration.convert(savedUser, UserDetailDto.class);
     }
 

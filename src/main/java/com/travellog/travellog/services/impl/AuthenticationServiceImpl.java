@@ -5,6 +5,7 @@ import com.travellog.travellog.configurations.ConversionConfiguration;
 import com.travellog.travellog.constants.RoleEnum;
 import com.travellog.travellog.constants.TokenTypeEnum;
 import com.travellog.travellog.dtos.authentication.AuthenticationDetailDto;
+import com.travellog.travellog.dtos.profile.CreateProfileDto;
 import com.travellog.travellog.dtos.user.CreateUserDto;
 import com.travellog.travellog.dtos.authentication.LoginDto;
 import com.travellog.travellog.dtos.user.UserDetailDto;
@@ -14,10 +15,7 @@ import com.travellog.travellog.models.Token;
 import com.travellog.travellog.models.User;
 import com.travellog.travellog.repositories.ITokenRepository;
 import com.travellog.travellog.repositories.IUserRepository;
-import com.travellog.travellog.services.spec.IAuthenticationService;
-import com.travellog.travellog.services.spec.ICustomUserDetailsService;
-import com.travellog.travellog.services.spec.IJWTService;
-import com.travellog.travellog.services.spec.IUserService;
+import com.travellog.travellog.services.spec.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
@@ -42,9 +40,9 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private final IUserService userService;
 
     public AuthenticationServiceImpl(IUserRepository userRepository, ITokenRepository tokenRepository,
-            IJWTService jwtService,
-            AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
-            ICustomUserDetailsService customUserDetailsService, IUserService userService) {
+                                     IJWTService jwtService,
+                                     AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
+                                     ICustomUserDetailsService customUserDetailsService, IUserService userService) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.jwtService = jwtService;
@@ -62,6 +60,8 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
                 .isExpired(false)
                 .isRevoked(false)
                 .build();
+
+        System.out.println("Token: " + token);
 
         tokenRepository.save(token);
     }
@@ -91,7 +91,14 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
 
         saveUserToken(user, jwtToken);
 
-        return AuthenticationDetailDto.builder().accessToken(jwtToken).refreshToken(refreshToken).build();
+        return AuthenticationDetailDto
+                .builder()
+                .id(user.getId().toString())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     @Override
@@ -116,7 +123,14 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         revokeAllUserTokens(user.getId());
         saveUserToken(user, jwtToken);
 
-        return AuthenticationDetailDto.builder().accessToken(jwtToken).refreshToken(refreshToken).build();
+        return AuthenticationDetailDto
+                .builder()
+                .id(user.getId().toString())
+                .email(user.getEmail())
+                .username(user.getUsername())
+                .accessToken(jwtToken)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     @Override
@@ -154,6 +168,9 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         saveUserToken(user, jwtToken);
 
         AuthenticationDetailDto authResponse = AuthenticationDetailDto.builder()
+                .id(user.getId().toString())
+                .email(user.getEmail())
+                .username(user.getUsername())
                 .accessToken(jwtToken)
                 .refreshToken(newRefreshToken)
                 .build();

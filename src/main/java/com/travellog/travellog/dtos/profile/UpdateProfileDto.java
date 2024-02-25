@@ -24,7 +24,7 @@ public class UpdateProfileDto {
 
     private GenderEnum sex;
 
-    private String image;
+    private String profilePhoto;
 
     private String addressOne;
 
@@ -32,9 +32,13 @@ public class UpdateProfileDto {
 
     private String state;
 
+    private String city;
+
     private Integer zipCode;
 
-    private String coverImage;
+    private String coverPhoto;
+
+    private Integer countryId;
 
     @Past
     private Date birthDate;

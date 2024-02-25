@@ -1,5 +1,6 @@
 package com.travellog.travellog.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,4 +27,7 @@ public class Country extends Audit {
 
     @OneToMany(mappedBy = "country")
     private List<TravelLog> travelLogs;
+
+    @OneToMany(mappedBy = "country")
+    private List<Profile> profiles;
 }
