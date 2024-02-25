@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.travellog.travellog.configurations.MinioConfiguration;
+import com.travellog.travellog.exceptions.EntityException;
 import com.travellog.travellog.payload.AddFileResponse;
 import com.travellog.travellog.payload.FileResponse;
 import com.travellog.travellog.services.spec.IFileStorageService;
@@ -56,7 +57,7 @@ public class FileStorageService implements IFileStorageService {
         }
         return null;
     }
-;
+    
     @Override
     public FileResponse getFile(String fileName) {
         try {
@@ -77,9 +78,9 @@ public class FileStorageService implements IFileStorageService {
                     .build();
 
         } catch (EntityNotFoundException e) {
-            throw new EntityNotFoundException();
+            throw new EntityException.NotFoundException("Image");
         } catch (Exception e) {
-            throw new RuntimeException();
+            throw new InternalError();
         }
     }
 

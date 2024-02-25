@@ -18,13 +18,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.validation.constraints.NotEmpty;
 
 
 
 @RestController
 @RequestMapping("/api/v1/image")
 public class ImageController {
-
     private final IFileStorageService fileStorageService;
     
     public ImageController(IFileStorageService fileStorageService){
@@ -42,7 +42,7 @@ public class ImageController {
     @GetMapping("/{file}")
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Download a File")
-    public ResponseEntity<InputStreamResource> fetchImage(@PathVariable String file){
+    public ResponseEntity<InputStreamResource> fetchImage(@PathVariable @NotEmpty String file){
         FileResponse source = fileStorageService.getFile(file);
         return ResponseEntity
                 .ok()
