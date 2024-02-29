@@ -32,11 +32,9 @@ public class JWTServiceImpl implements IJWTService {
     private long refreshExpiration;
 
     private final ITokenRepository tokenRepository;
-    private final IRedisService redisService;
 
-    public JWTServiceImpl(ITokenRepository tokenRepository, IRedisService redisService) {
+    public JWTServiceImpl(ITokenRepository tokenRepository) {
         this.tokenRepository = tokenRepository;
-        this.redisService = redisService;
     }
 
     @Override
