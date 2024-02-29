@@ -16,4 +16,10 @@ public class AuthenticationDetailDto {
 
     @JsonProperty("refresh_token")
     private String refreshToken;
+
+    private String id;
+
+    private String email;
+
+    private String username;
 }
