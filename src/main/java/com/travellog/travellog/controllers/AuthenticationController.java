@@ -28,7 +28,7 @@ public class AuthenticationController {
 
     @PostMapping("/register")
     public ResponseEntity<ResponseHelper.CustomResponse<AuthenticationDetailDto>> register(
-            @Valid @RequestBody CreateUserDto createUserDto) {
+            @Valid @RequestBody CreateUserDto createUserDto, HttpServletResponse response) {
         return new ResponseEntity<>(
                 new ResponseHelper.CustomResponse<>(true, "Successfully registered user!",
                         authenticationService.register(createUserDto)),
@@ -37,7 +37,7 @@ public class AuthenticationController {
 
     @PostMapping("/login")
     public ResponseEntity<ResponseHelper.CustomResponse<AuthenticationDetailDto>> login(
-            @Valid @RequestBody LoginDto loginDto) {
+            @Valid @RequestBody LoginDto loginDto, HttpServletResponse response) {
         return new ResponseEntity<>(
                 new ResponseHelper.CustomResponse<>(true, "Successfully logged in user!",
                         authenticationService.authenticate(loginDto)),

@@ -5,16 +5,7 @@ import java.sql.Date;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.travellog.travellog.constants.GenderEnum;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,7 +28,7 @@ public class Profile extends Audit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(nullable = false, name="first_name")
+    @Column(name="first_name")
     private String firstName;
 
     @Column(name= "last_name")
@@ -46,34 +37,41 @@ public class Profile extends Audit {
     @Column(name = "middle_name")
     private String middleName;
 
-    @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private GenderEnum sex;
 
-    @Column()
-    private String image;
+    @Column(name = "profile_photo")
+    private String profilePhoto;
 
-    @Column(nullable=false, name="address_one")
+    @Column(name="address_one")
     private String addressOne;
 
     @Column(name="address_two")
     private String addressTwo;
 
-    @Column(nullable = false)
+    @Column(name="state")
     private String state;
 
-    @Column(nullable = false, name="zip_code")
-    private Integer zipCode;
+    @Column(name="city")
+    private String city;
 
-    @Column(name = "cover_image")
-    private String coverImage;
+    @Column(name="zip_code")
+    private Integer zipcode;
+
+    @Column(name = "cover_photo")
+    private String coverPhoto;
 
     @Column(name = "birth_date")
     private Date birthDate;
 
-    @OneToOne(optional = false)
-    @JoinColumn(name="user_id")
+    @OneToOne
+    @JoinColumn(name="user_id", nullable = false)
     @JsonIgnore
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "country_id")
+    @JsonIgnore
+    private Country country;
 
 }
