@@ -1,10 +1,10 @@
-package com.travellog.travellog.payload;
+package com.travellog.travellog.dtos.files;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class AddFileResponse {
+public class AddFileResponseDto {
     String path;
 }

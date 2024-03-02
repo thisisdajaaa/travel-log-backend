@@ -1,5 +1,6 @@
 package com.travellog.travellog.configurations;
 
+import com.travellog.travellog.dtos.minio.MinioConfigurationDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -9,7 +10,7 @@ import io.minio.MinioClient;
 @Configuration
 public class MinioConfig {
     @Autowired
-    private MinioConfiguration minioConfiguration;
+    private MinioConfigurationDto minioConfiguration;
 
     @Bean
     public MinioClient minioClient() {

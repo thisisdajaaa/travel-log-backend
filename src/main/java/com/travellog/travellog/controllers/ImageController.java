@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.travellog.travellog.payload.AddFileResponse;
-import com.travellog.travellog.payload.FileResponse;
+import com.travellog.travellog.dtos.files.AddFileResponseDto;
+import com.travellog.travellog.dtos.files.FileResponseDto;
 import com.travellog.travellog.services.spec.IFileStorageService;
 
 import org.springframework.core.io.InputStreamResource;
@@ -34,8 +34,8 @@ public class ImageController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Upload a file")
-    public ResponseEntity<AddFileResponse> uploadImage(@RequestParam("image") MultipartFile file){
-        AddFileResponse response = fileStorageService.addFile(file, file.getOriginalFilename());
+    public ResponseEntity<AddFileResponseDto> uploadImage(@RequestParam("image") MultipartFile file){
+        AddFileResponseDto response = fileStorageService.addFile(file, file.getOriginalFilename());
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -43,7 +43,7 @@ public class ImageController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Download a File")
     public ResponseEntity<InputStreamResource> fetchImage(@PathVariable @NotEmpty String file){
-        FileResponse source = fileStorageService.getFile(file);
+        FileResponseDto source = fileStorageService.getFile(file);
         return ResponseEntity
                 .ok()
                 .contentType(MediaType.parseMediaType(source.getContentType()))

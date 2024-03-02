@@ -1,4 +1,4 @@
-package com.travellog.travellog.payload;
+package com.travellog.travellog.dtos.files;
 
 
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -12,11 +12,9 @@ import java.util.Date;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-// @EqualsAndHashCode(callSuper = true)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Builder
-// @JsonInclude(value = JsonInclude.Include.NON_NULL, valueFilter = RepresentationModel.class)
-public class FileResponse{
+public class FileResponseDto {
     String filename;
     String contentType;
     Long fileSize;

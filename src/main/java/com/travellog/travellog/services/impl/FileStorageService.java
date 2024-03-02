@@ -16,10 +16,10 @@ import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.travellog.travellog.configurations.MinioConfiguration;
+import com.travellog.travellog.dtos.minio.MinioConfigurationDto;
 import com.travellog.travellog.exceptions.EntityException;
-import com.travellog.travellog.payload.AddFileResponse;
-import com.travellog.travellog.payload.FileResponse;
+import com.travellog.travellog.dtos.files.AddFileResponseDto;
+import com.travellog.travellog.dtos.files.FileResponseDto;
 import com.travellog.travellog.services.spec.IFileStorageService;
 
 import io.minio.GetObjectArgs;
@@ -35,15 +35,15 @@ import jakarta.persistence.EntityNotFoundException;
 public class FileStorageService implements IFileStorageService {
 
     private  MinioClient minioClient;
-    private  MinioConfiguration minioConfiguration;
+    private MinioConfigurationDto minioConfiguration;
 
-    FileStorageService(MinioClient minioClient,MinioConfiguration minioConfiguration ){
+    FileStorageService(MinioClient minioClient, MinioConfigurationDto minioConfiguration ){
         this.minioClient = minioClient;
         this.minioConfiguration = minioConfiguration;
     }
 
     @Override
-    public AddFileResponse addFile(MultipartFile multipartFile, String fileName) {
+    public AddFileResponseDto addFile(MultipartFile multipartFile, String fileName) {
         try {
             String extension = FileNameUtils.getExtension(fileName);
             String uuid = UUID.randomUUID().toString();
@@ -51,7 +51,7 @@ public class FileStorageService implements IFileStorageService {
                     uuid,
                     multipartFile.getContentType());
             Path fullPath = Paths.get(minioConfiguration.getMinioBucket(), uuid + "." + extension);
-            return new AddFileResponse(fullPath.toString());
+            return new AddFileResponseDto(fullPath.toString());
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
@@ -59,7 +59,7 @@ public class FileStorageService implements IFileStorageService {
     }
     
     @Override
-    public FileResponse getFile(String fileName) {
+    public FileResponseDto getFile(String fileName) {
         try {
             Path path = Path.of(fileName);
             StatObjectResponse metadata = getMetaData(path.toString());
@@ -70,7 +70,7 @@ public class FileStorageService implements IFileStorageService {
                     .build();
             InputStream stream = minioClient.getObject(args);
             InputStreamResource inputStreamResource = new InputStreamResource(stream);
-            return FileResponse.builder()
+            return FileResponseDto.builder()
                     .filename(fileName)
                     .fileSize(metadata.size())
                     .contentType(metadata.contentType())
