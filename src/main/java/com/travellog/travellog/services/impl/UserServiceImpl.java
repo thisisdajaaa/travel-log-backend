@@ -42,7 +42,6 @@ public class UserServiceImpl implements IUserService {
 
         Optional<User> foundUserByUsername = userRepository.findByUsername(createUserDto.getUsername());
         Optional<User> foundUserByEmail = userRepository.findByEmail(createUserDto.getEmail());
-
         if (foundUserByUsername.isPresent() || foundUserByEmail.isPresent()) {
             throw new UserException.AlreadyExistsException();
         }
