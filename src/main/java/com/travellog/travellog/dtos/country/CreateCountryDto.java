@@ -1,11 +1,16 @@
 package com.travellog.travellog.dtos.country;
 
+import com.travellog.travellog.helpers.Utils;
+
+import jakarta.persistence.Convert;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+
+
 import lombok.NoArgsConstructor;
 
 @Data
@@ -22,4 +27,8 @@ public class CreateCountryDto {
     @NotBlank(message = "Country code field should not be blank!")
     @Size(min = 1, max = 5, message = "Country code must be 1 or 5 characters!")
     private String code;
+
+    public void setName(String s){
+        this.name = Utils.sanitizedString(s);
+    }
 }
