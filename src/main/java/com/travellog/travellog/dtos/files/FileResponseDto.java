@@ -1,6 +1,5 @@
 package com.travellog.travellog.dtos.files;
 
-
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
@@ -8,7 +7,6 @@ import lombok.experimental.FieldDefaults;
 import org.springframework.core.io.InputStreamResource;
 
 import java.time.LocalDate;
-import java.util.Date;
 
 @Data
 @NoArgsConstructor

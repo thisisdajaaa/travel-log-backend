@@ -2,7 +2,6 @@ package com.travellog.travellog.services.impl;
 
 import com.travellog.travellog.repositories.ITokenRepository;
 import com.travellog.travellog.services.spec.IJWTService;
-import com.travellog.travellog.services.spec.IRedisService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -13,7 +12,6 @@ import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
 import org.springframework.beans.factory.annotation.Value;

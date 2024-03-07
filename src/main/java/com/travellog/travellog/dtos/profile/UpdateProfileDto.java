@@ -1,6 +1,5 @@
 package com.travellog.travellog.dtos.profile;
 
-import java.sql.Date;
 import java.time.LocalDate;
 
 import com.travellog.travellog.constants.GenderEnum;

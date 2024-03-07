@@ -1,13 +1,10 @@
 package com.travellog.travellog.dtos.profile;
 
-import java.sql.Date;
 import java.time.LocalDate;
 
 import com.travellog.travellog.constants.GenderEnum;
 
-
 import com.travellog.travellog.dtos.address.AddressDetailDto;
-import com.travellog.travellog.dtos.country.CountryDetailDto;
 import lombok.*;
 
 @Data

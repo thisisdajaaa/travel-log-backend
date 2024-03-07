@@ -1,6 +1,5 @@
 package com.travellog.travellog.models;
 
-import java.sql.Date;
 import java.time.LocalDate;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -22,16 +21,16 @@ import lombok.ToString;
 @AllArgsConstructor
 @Builder
 @Transactional
-@ToString(exclude = {"user", "address"})
+@ToString(exclude = { "user", "address" })
 public class Profile extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
 
-    @Column(name="first_name")
+    @Column(name = "first_name")
     private String firstName;
 
-    @Column(name= "last_name")
+    @Column(name = "last_name")
     private String lastName;
 
     @Column(name = "middle_name")
@@ -50,12 +49,12 @@ public class Profile extends Audit {
     private LocalDate birthDate;
 
     @OneToOne
-    @JoinColumn(name="user_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     @JsonIgnore
     private User user;
 
     @OneToOne
-    @JoinColumn(name="address_id", nullable = false)
+    @JoinColumn(name = "address_id", nullable = false)
     @JsonIgnore
     private Address address;
 }

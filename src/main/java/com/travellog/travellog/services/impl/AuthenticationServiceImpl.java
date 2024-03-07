@@ -5,7 +5,6 @@ import com.travellog.travellog.configurations.ConversionConfiguration;
 import com.travellog.travellog.constants.RoleEnum;
 import com.travellog.travellog.constants.TokenTypeEnum;
 import com.travellog.travellog.dtos.authentication.AuthenticationDetailDto;
-import com.travellog.travellog.dtos.profile.CreateProfileDto;
 import com.travellog.travellog.dtos.user.CreateUserDto;
 import com.travellog.travellog.dtos.authentication.LoginDto;
 import com.travellog.travellog.dtos.user.UserDetailDto;
@@ -40,9 +39,9 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
     private final IUserService userService;
 
     public AuthenticationServiceImpl(IUserRepository userRepository, ITokenRepository tokenRepository,
-                                     IJWTService jwtService,
-                                     AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
-                                     ICustomUserDetailsService customUserDetailsService, IUserService userService) {
+            IJWTService jwtService,
+            AuthenticationManager authenticationManager, ConversionConfiguration conversionConfiguration,
+            ICustomUserDetailsService customUserDetailsService, IUserService userService) {
         this.userRepository = userRepository;
         this.tokenRepository = tokenRepository;
         this.jwtService = jwtService;
