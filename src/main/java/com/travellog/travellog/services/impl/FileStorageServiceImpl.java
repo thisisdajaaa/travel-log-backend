@@ -12,6 +12,7 @@ import java.util.UUID;
 import javax.imageio.ImageIO;
 
 import org.apache.commons.compress.utils.FileNameUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,12 +33,12 @@ import io.minio.errors.ErrorResponseException;
 import jakarta.persistence.EntityNotFoundException;
 
 @Service
-public class FileStorageService implements IFileStorageService {
+public class FileStorageServiceImpl implements IFileStorageService {
 
-    private  MinioClient minioClient;
-    private MinioConfigurationDto minioConfiguration;
+    private final MinioClient minioClient;
+    private final MinioConfigurationDto minioConfiguration;
 
-    FileStorageService(MinioClient minioClient, MinioConfigurationDto minioConfiguration ){
+    FileStorageServiceImpl(MinioClient minioClient, MinioConfigurationDto minioConfiguration) {
         this.minioClient = minioClient;
         this.minioConfiguration = minioConfiguration;
     }
@@ -47,7 +48,7 @@ public class FileStorageService implements IFileStorageService {
         try {
             String extension = FileNameUtils.getExtension(fileName);
             String uuid = UUID.randomUUID().toString();
-            resizeAndSaveImages(multipartFile.getInputStream(), minioClient, new int[] { 100, 200, 300 }, extension,
+            resizeAndSaveImages(multipartFile.getInputStream(), minioClient, new int[]{100, 200, 300}, extension,
                     uuid,
                     multipartFile.getContentType());
             Path fullPath = Paths.get(minioConfiguration.getMinioBucket(), uuid + "." + extension);
@@ -57,7 +58,7 @@ public class FileStorageService implements IFileStorageService {
         }
         return null;
     }
-    
+
     @Override
     public FileResponseDto getFile(String fileName) {
         try {
@@ -66,7 +67,7 @@ public class FileStorageService implements IFileStorageService {
             // only get object if it is present.
             GetObjectArgs args = GetObjectArgs.builder()
                     .bucket(minioConfiguration.getMinioBucket())
-                    .object(fileName.toString())
+                    .object(fileName)
                     .build();
             InputStream stream = minioClient.getObject(args);
             InputStreamResource inputStreamResource = new InputStreamResource(stream);
@@ -99,33 +100,31 @@ public class FileStorageService implements IFileStorageService {
     }
 
     private void resizeAndSaveImages(InputStream inputStream, MinioClient minioClient, int[] sizes, String extension,
-            String imageName,
-            String contentType)
+                                     String imageName,
+                                     String contentType)
             throws IOException {
         try {
-            // uncomment below code to save original file.
-            // minioClient.putObject(PutObjectArgs.builder().bucket(bucketName).object(imageName + "." + extension)
-            //         .stream(inputStream, inputStream.available(), -1).contentType(contentType).build());
-            // save original image
-            BufferedImage originalImage = ImageIO.read(inputStream);
-            // Resize and save images
-            for (int size : sizes) {
-                BufferedImage resizedImage = resize(originalImage, size, size);
-
-                // Convert BufferedImage to InputStream
-                ByteArrayOutputStream os = new ByteArrayOutputStream();
-                ImageIO.write(resizedImage, contentType.split("/")[1], os);
-                InputStream resizedInputStream = new ByteArrayInputStream(os.toByteArray());
-                // Upload image to MinIO
-                minioClient.putObject(
-                        PutObjectArgs.builder()
-                                .bucket(minioConfiguration.getMinioBucket())
-                                .object(imageName + "_" + size + "." + extension)
-                                .stream(resizedInputStream, resizedInputStream.available(), -1)
-                                .contentType(contentType)
-                                .build());
-                resizedInputStream.close();
-            }
+            minioClient.putObject(PutObjectArgs.builder().bucket(minioConfiguration.getMinioBucket()).object(imageName + "." + extension)
+                    .stream(inputStream, inputStream.available(), -1).contentType(contentType).build());
+//            BufferedImage originalImage = ImageIO.read(inputStream);
+//            // Resize and save images
+//            for (int size : sizes) {
+//                BufferedImage resizedImage = resize(originalImage, size, size);
+//
+//                // Convert BufferedImage to InputStream
+//                ByteArrayOutputStream os = new ByteArrayOutputStream();
+//                ImageIO.write(resizedImage, contentType.split("/")[1], os);
+//                InputStream resizedInputStream = new ByteArrayInputStream(os.toByteArray());
+//                // Upload image to MinIO
+//                minioClient.putObject(
+//                        PutObjectArgs.builder()
+//                                .bucket(minioConfiguration.getMinioBucket())
+//                                .object(imageName + "_" + size + "." + extension)
+//                                .stream(resizedInputStream, resizedInputStream.available(), -1)
+//                                .contentType(contentType)
+//                                .build());
+//                resizedInputStream.close();
+            //}
         } catch (Exception e) {
             System.out.println("error" + e.getMessage());
             throw new RuntimeException();

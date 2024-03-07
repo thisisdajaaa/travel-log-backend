@@ -23,7 +23,7 @@ import jakarta.validation.constraints.NotEmpty;
 
 
 @RestController
-@RequestMapping("/api/v1/image")
+@RequestMapping("/api/v1/images")
 public class ImageController {
     private final IFileStorageService fileStorageService;
     

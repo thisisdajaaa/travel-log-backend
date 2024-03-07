@@ -7,6 +7,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 import org.springframework.core.io.InputStreamResource;
 
+import java.time.LocalDate;
 import java.util.Date;
 
 @Data
@@ -18,7 +19,7 @@ public class FileResponseDto {
     String filename;
     String contentType;
     Long fileSize;
-    Date createdTime;
+    LocalDate createdTime;
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
     @Schema(hidden = true)
     transient InputStreamResource stream;
