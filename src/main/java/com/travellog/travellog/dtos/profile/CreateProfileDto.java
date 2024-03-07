@@ -1,6 +1,7 @@
 package com.travellog.travellog.dtos.profile;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import com.travellog.travellog.constants.GenderEnum;
 
@@ -38,13 +39,17 @@ public class CreateProfileDto{
 
     private String state;
 
+    private String city;
+
     private Integer zipCode;
 
-    private String coverImage;
+    private String profilePhoto;
+
+    private String coverPhoto;
 
     private Integer countryId;
 
     @PastOrPresent
-    private Date birthDate;
+    private LocalDate birthDate;
 
 }

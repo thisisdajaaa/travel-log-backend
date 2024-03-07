@@ -13,7 +13,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = { "travelLogs" })
+@ToString(exclude = { "travelLogs", "addresses" })
 public class Country extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,5 +29,5 @@ public class Country extends Audit {
     private List<TravelLog> travelLogs;
 
     @OneToMany(mappedBy = "country")
-    private List<Profile> profiles;
+    private List<Address> addresses;
 }

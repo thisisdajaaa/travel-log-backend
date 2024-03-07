@@ -1,22 +1,20 @@
 package com.travellog.travellog.dtos.profile;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import com.travellog.travellog.constants.GenderEnum;
 
 
+import com.travellog.travellog.dtos.address.AddressDetailDto;
 import com.travellog.travellog.dtos.country.CountryDetailDto;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
+import lombok.*;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ProfileDetailDto{
+public class ProfileDetailDto {
     private Integer id;
 
     private String firstName;
@@ -29,24 +27,14 @@ public class ProfileDetailDto{
 
     private String profilePhoto;
 
-    private String addressOne;
-
-    private String addressTwo;
-
-    private String city;
-
-    private String state;
-
-    private Integer zipCode;
-
     private String coverPhoto;
 
-    private Date birthDate;
-
-    private CountryDetailDto country;
+    private LocalDate birthDate;
 
     private String username;
 
     private String email;
+
+    private AddressDetailDto addressDetail;
 
 }

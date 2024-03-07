@@ -262,6 +262,7 @@ public enum CountryListEnum {
                 return value;
             }
         }
+
         throw new IllegalArgumentException("No country with code " + code + " found");
     }
 }

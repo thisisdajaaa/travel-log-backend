@@ -1,6 +1,7 @@
 package com.travellog.travellog.dtos.profile;
 
 import java.sql.Date;
+import java.time.LocalDate;
 
 import com.travellog.travellog.constants.GenderEnum;
 
@@ -41,5 +42,5 @@ public class UpdateProfileDto {
     private Integer countryId;
 
     @Past
-    private Date birthDate;
+    private LocalDate birthDate;
 }
