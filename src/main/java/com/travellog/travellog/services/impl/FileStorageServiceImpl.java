@@ -85,6 +85,11 @@ public class FileStorageServiceImpl implements IFileStorageService {
         }
     }
 
+    @Override
+    public String getFormattedFilePath(String fileName) {
+        return String.format("%s/%s", minioConfiguration.getMinioEndpoint(), fileName);
+    }
+
     private StatObjectResponse getMetaData(String path) {
         try {
             StatObjectArgs args = StatObjectArgs.builder()

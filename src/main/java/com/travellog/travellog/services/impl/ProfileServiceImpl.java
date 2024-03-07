@@ -16,6 +16,7 @@ import com.travellog.travellog.repositories.IAddressRepository;
 import com.travellog.travellog.repositories.IProfileRepository;
 import com.travellog.travellog.repositories.IUserRepository;
 import com.travellog.travellog.services.spec.ICountryService;
+import com.travellog.travellog.services.spec.IFileStorageService;
 import com.travellog.travellog.services.spec.IProfileService;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
@@ -27,13 +28,15 @@ public class ProfileServiceImpl implements IProfileService {
     private final ConversionConfiguration conversionConfiguration;
     private final ICountryService countryService;
     private final IUserRepository userRepository;
+    private final IFileStorageService fileStorageService;
 
-    public ProfileServiceImpl(IProfileRepository profileRepository, IAddressRepository addressRepository, ConversionConfiguration conversionConfiguration, ICountryService countryService, IUserRepository userRepository) {
+    public ProfileServiceImpl(IProfileRepository profileRepository, IAddressRepository addressRepository, ConversionConfiguration conversionConfiguration, ICountryService countryService, IUserRepository userRepository, IFileStorageService fileStorageService) {
         this.profileRepository = profileRepository;
         this.addressRepository = addressRepository;
         this.conversionConfiguration = conversionConfiguration;
         this.countryService = countryService;
         this.userRepository = userRepository;
+        this.fileStorageService = fileStorageService;
     }
 
     @Override
@@ -58,21 +61,29 @@ public class ProfileServiceImpl implements IProfileService {
                 .country(foundCountry)
                 .build();
 
-        System.out.println("countryDetailDto: "+ addressDetailDto.getCountry());
-
-        return ProfileDetailDto.builder()
+        ProfileDetailDto profileDetailDto = ProfileDetailDto.builder()
                 .id(profile.getId())
                 .firstName(profile.getFirstName())
                 .middleName(profile.getMiddleName())
                 .lastName(profile.getLastName())
                 .sex(profile.getSex())
                 .addressDetail(addressDetailDto)
-                .profilePhoto(profile.getProfilePhoto())
-                .coverPhoto(profile.getCoverPhoto())
                 .birthDate(profile.getBirthDate())
                 .email(profile.getUser().getEmail())
                 .username(profile.getUser().getUsername())
                 .build();
+
+        if (profile.getProfilePhoto() != null) {
+            String formattedProfilePhoto = fileStorageService.getFormattedFilePath(profile.getProfilePhoto());
+            profileDetailDto.setProfilePhoto(formattedProfilePhoto);
+        }
+
+        if (profile.getCoverPhoto() != null) {
+            String formattedCoverPhoto = fileStorageService.getFormattedFilePath(profile.getCoverPhoto());
+            profileDetailDto.setCoverPhoto(formattedCoverPhoto);
+        }
+
+        return profileDetailDto;
     }
 
     @Override
@@ -92,7 +103,7 @@ public class ProfileServiceImpl implements IProfileService {
 
         if (updateProfileDto.getFirstName() != null) profile.setFirstName(updateProfileDto.getFirstName());
         if (updateProfileDto.getLastName() != null) profile.setLastName(updateProfileDto.getLastName());
-        if (updateProfileDto.getMiddleName() != null) profile.setMiddleName(updateProfileDto.getFirstName());
+        if (updateProfileDto.getMiddleName() != null) profile.setMiddleName(updateProfileDto.getMiddleName());
         if (updateProfileDto.getSex() != null) profile.setSex(updateProfileDto.getSex());
         if (updateProfileDto.getProfilePhoto() != null) profile.setProfilePhoto(updateProfileDto.getProfilePhoto());
         if (updateProfileDto.getAddressOne() != null) address.setAddressOne(updateProfileDto.getAddressOne());

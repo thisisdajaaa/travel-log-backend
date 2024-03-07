@@ -12,4 +12,5 @@ public interface IFileStorageService {
 
     FileResponseDto getFile(String fileName);
 
+    String getFormattedFilePath(String fileName);
 }

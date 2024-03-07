@@ -1,5 +1,6 @@
 package com.travellog.travellog.controllers;
 
+import com.travellog.travellog.helpers.ResponseHelper;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -34,9 +35,13 @@ public class ImageController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Upload a file")
-    public ResponseEntity<AddFileResponseDto> uploadImage(@RequestParam("image") MultipartFile file){
+    public ResponseEntity<ResponseHelper.CustomResponse<AddFileResponseDto>> uploadImage(@RequestParam("image") MultipartFile file){
         AddFileResponseDto response = fileStorageService.addFile(file, file.getOriginalFilename());
-        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        
+        return new ResponseEntity<>(
+                new ResponseHelper.CustomResponse<>(true, "Successfully created country!",
+                        response),
+                HttpStatus.CREATED);
     }
 
     @GetMapping("/{file}")
