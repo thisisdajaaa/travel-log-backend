@@ -84,19 +84,11 @@ public class AuthenticationServiceImpl implements IAuthenticationService {
         UserDetailDto createdUser = userService.createUser(createUserDto, RoleEnum.USER);
         User user = conversionConfiguration.convert(createdUser, User.class);
 
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(user.getUsername());
-        String jwtToken = jwtService.generateToken(userDetails);
-        String refreshToken = jwtService.generateRefreshToken(userDetails);
-
-        saveUserToken(user, jwtToken);
-
         return AuthenticationDetailDto
                 .builder()
                 .id(user.getId().toString())
                 .email(user.getEmail())
                 .username(user.getUsername())
-                .accessToken(jwtToken)
-                .refreshToken(refreshToken)
                 .build();
     }
 
