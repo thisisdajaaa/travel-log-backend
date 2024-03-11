@@ -9,7 +9,7 @@ public enum CountryListEnum {
     ALBANIA("Albania", "AL"),
     ALGERIA("Algeria", "DZ"),
     AMERICAN_SAMOA("American Samoa", "AS"),
-    ANDORRA("AndorrA", "AD"),
+    ANDORRA("Andorra", "AD"),
     ANGOLA("Angola", "AO"),
     ANGUILLA("Anguilla", "AI"),
     ANTARCTICA("Antarctica", "AQ"),

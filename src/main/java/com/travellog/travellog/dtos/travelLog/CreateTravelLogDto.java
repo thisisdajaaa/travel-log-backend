@@ -9,8 +9,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -27,7 +30,11 @@ public class CreateTravelLogDto {
 
     private String description;
 
-    @NotNull(message = "Visit date field should not be null!")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    private Instant visitDate;
+    @NotNull(message = "Visit start date field should not be null!")
+    private LocalDate visitStartDate;
+
+    @NotNull(message = "Visit end date field should not be null!")
+    private LocalDate visitEndDate;
+
+    private List<MultipartFile> images;
 }

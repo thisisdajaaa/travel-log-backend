@@ -1,16 +1,20 @@
 package com.travellog.travellog.controllers;
 
+import com.travellog.travellog.dtos.files.AddFileResponseDto;
 import com.travellog.travellog.dtos.travelLog.CreateTravelLogDto;
 import com.travellog.travellog.dtos.travelLog.TravelLogDetailDto;
 import com.travellog.travellog.dtos.travelLog.UpdateTravelLogDto;
+import com.travellog.travellog.dtos.travelPhoto.TravelPhotoDetailDto;
 import com.travellog.travellog.helpers.ResponseHelper;
 import com.travellog.travellog.models.User;
 import com.travellog.travellog.services.spec.ICustomUserDetailsService;
+import com.travellog.travellog.services.spec.IFileStorageService;
 import com.travellog.travellog.services.spec.ITravelLogService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -25,12 +29,14 @@ public class TravelLogController {
         this.customUserDetailsService = customUserDetailsService;
     }
 
-    @PostMapping
+    @PostMapping(consumes = {"multipart/form-data"})
     public ResponseEntity<ResponseHelper.CustomResponse<TravelLogDetailDto>> createTravelLog(
-            @Valid @RequestBody CreateTravelLogDto createTravelLogDto) {
+            @RequestPart("createTravelLogDto") @Valid CreateTravelLogDto createTravelLogDto,
+            @RequestPart("images") MultipartFile[] images) {
+
         return new ResponseEntity<>(
                 new ResponseHelper.CustomResponse<>(true, "Successfully created travel log!",
-                        travelLogService.createTravelLog(createTravelLogDto)),
+                        travelLogService.createTravelLogWithPhotos(createTravelLogDto, images)),
                 HttpStatus.CREATED);
     }
 

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -14,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@ToString(exclude = { "user", "country", "photos" })
+@ToString(exclude = { "user", "country", "travelPhotos" })
 public class TravelLog extends Audit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +28,11 @@ public class TravelLog extends Audit {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "visit_date", nullable = false)
-    private Instant visitDate;
+    @Column(name = "visit_start_date", nullable = false)
+    private LocalDate visitStartDate;
+
+    @Column(name = "visit_end_date", nullable = false)
+    private LocalDate visitEndDate;
 
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
@@ -40,5 +45,11 @@ public class TravelLog extends Audit {
     private Country country;
 
     @OneToMany(mappedBy = "travelLog")
-    private List<Photo> photos;
+    private List<TravelPhoto> travelPhotos;
+
+    public void addPhoto(TravelPhoto photo) {
+        if (this.travelPhotos == null) travelPhotos = new ArrayList<>();
+        this.travelPhotos.add(photo);
+        photo.setTravelLog(this);
+    }
 }

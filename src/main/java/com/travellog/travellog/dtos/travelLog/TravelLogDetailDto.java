@@ -4,12 +4,15 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.ser.InstantSerializer;
 import com.travellog.travellog.dtos.country.CountryDetailDto;
+import com.travellog.travellog.dtos.travelPhoto.TravelPhotoDetailDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.Instant;
+import java.time.LocalDate;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -22,12 +25,13 @@ public class TravelLogDetailDto {
 
     private String description;
 
-    @JsonSerialize(using = InstantSerializer.class)
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'", timezone = "UTC")
-    private Instant visitDate;
+    private LocalDate visitStartDate;
+
+    private LocalDate visitEndDate;
 
     private Integer userId;
 
     private CountryDetailDto country;
 
+    private List<TravelPhotoDetailDto> photos;
 }
